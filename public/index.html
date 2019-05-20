@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
+  <title>Shortfolio</title>
+  <meta charset="utf-8" />
 </head>
 <body>
   <h1>Two good doggos</h1>
-  <img src="doggos.png" />
+  <img src="doggos.png" alt="Bob and Mia" />
+  <form ref='uploadForm'
+      id='uploadForm'
+      action='upload'
+      method='post'
+      encType="multipart/form-data">
+        <input type="file" name="coverPhoto" />
+        <input type='submit' value='Upload!' />
+    </form>
 </body>
 </html>
