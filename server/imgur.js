@@ -6,8 +6,7 @@ const upload = (coverPhoto) => {
     let data = {
       image: coverPhoto.encoded,
       album: keys.album,
-      type: 'base64',
-      name: coverPhoto.name
+      type: 'base64'
     };
   
     let config = {
@@ -18,15 +17,11 @@ const upload = (coverPhoto) => {
   
     axios.post(`https://api.imgur.com/3/upload`, data, config)
       .then(response => {
-        let uploadedImage = {
-          url: response.data.data.link,
-          id: response.data.data.id,
-          deleteHash: response.data.data.deletehash
-        };
-        if (!uploadedImage.url || !uploadedImage.id || !uploadedImage.deleteHash) {
-          reject(`Uploaded image missing values ${uploadedImage}`);
+        let imageUrl = response.data.data.link;
+        if (!imageUrl) {
+          return reject('Upload Error, missing image URL on response');
         }
-        resolve(uploadedImage);
+        resolve(imageUrl);
       })
       .catch(e => {
         reject(`Upload Error ${e.response.status}: ${e.response.statusText}`);
