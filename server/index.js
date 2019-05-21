@@ -15,10 +15,10 @@ app.get('/register', function(req, res, next) {
 app.post('/register', function(req, res, next) {
   db.createUser(req.body.username, req.body.password)
     .then(user => {
-      res.render('register', {}); // TODO send to admin panel to edit personal page
+      res.render('home', {}); // TODO send to admin panel to edit personal page
     })
     .catch(err => {
-      console.log(err);
+      handleError(err, res, 'createUser');
     });
 });
 
@@ -27,30 +27,12 @@ app.get('/login', function(req, res, next) {
   res.render('home', {});
 });
 
-app.get('/:username', function(req, res, next) {
-  let username = req.params.username;
-
-  // see if username is in db
-  db.selectImage(username)
-    .then(imageUrl => {
-      // serve image
-      res.render('personal', {
-        username,
-        imageUrl
-      });
-    })
-    .catch(err => {
-      if ('code' in err && 'text' in err) {
-        res.status(err.code).send(err.text);
-        console.log(`GET /:username selectImage catch ${err.code}: ${err.text}`)
-      } else {
-        res.status(500).send('Server error');
-        console.log(err);
-      }
-    });
+app.get('/edit', function(req, res, next) {
+  // TODO check session cookie
+  res.render('edit', {});
 });
 
-app.post('/upload', function(req, res) {
+app.post('/edit', function(req, res) {
   if (Object.keys(req.files).length == 0) {
     return res.status(400).send('No files were uploaded.');
   }
@@ -74,7 +56,7 @@ app.post('/upload', function(req, res) {
   // upload to imgur and save result to db
   imgur.upload(coverPhoto)
     .then(imageUrl => {
-      return db.saveImage(imageUrl, username);
+      return db.updateImageUrl(imageUrl, username);
     })
     .then(dbEntry => {
       res.render('personal', {
@@ -82,12 +64,43 @@ app.post('/upload', function(req, res) {
         imageUrl: dbEntry.url
       });
     })
-    .catch(error => {
-      console.log('error caught ');
-      res.status(500).send(error);
-      console.log(error)
+    .catch(err => {
+      handleError(err, res, 'updateImageUrl');
     });
 });
+
+app.get('/printdb', function(req, res, next) {
+  db.selectAll();
+  res.render('home', {});
+});
+
+app.get('/:username', function(req, res, next) {
+  let username = req.params.username;
+
+  // see if username is in db
+  db.getImageUrl(username)
+    .then(imageUrl => {
+      // serve image
+      res.render('personal', {
+        username,
+        imageUrl
+      });
+    })
+    .catch(err => {
+      handleError(err, res, 'getImageUrl');
+    });
+});
+
+function handleError(err, res, method) {
+  // catch any custom built error objects
+  if ('code' in err && 'text' in err) {
+    res.status(err.code).send(err.text);
+    console.log(`Error in ${method}, ${err.code}: ${err.text}`)
+  } else {
+    res.status(500).send('Server error');
+    console.log(err);
+  }
+}
 
 app.listen(config.port, () => {
   console.log(`Server is up on port ${config.port}`);
