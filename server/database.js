@@ -1,7 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 
 const logError = (err) => {
-  if (err) return console.log(err)
+  if (err) console.log(err)
 }
 
 let db = new sqlite3.Database(':memory:', (err) => {
@@ -13,14 +13,15 @@ let db = new sqlite3.Database(':memory:', (err) => {
 
 const create = () => {
   db.run("create table images (username TEXT PRIMARY KEY, url TEXT NOT NULL, imageId TEXT NOT NULL, deleteHash TEXT NOT NULL)", [], logError);
-  db.run("insert into images values ('cornwall', 'https://imgur.com/Tbmnq4R', 'Tbmnq4R', 'unknown')", [], logError);
-  db.run("insert into images values ('bobby', 'https://imgur.com/hneyXl5', 'hneyXl5', 'unknown')", [], logError);
+  db.run("insert into images values ('doggos', 'https://i.imgur.com/4FHyn6b.jpg', '4FHyn6b', 'unknown')", [], logError);
+  db.run("insert into images values ('spywhere', 'https://i.imgur.com/jUreedP.jpg', 'jUreedP', 'unknown')", [], logError);
+  db.run("insert into images values ('FredTheFarmer', 'https://i.imgur.com/sbZIj7N.jpg', 'sbZIj7N', 'unknown')", [], logError);
 }
 
 const selectAll = (selectStmt) => {
   return new Promise((resolve, reject) => {
     db.all(selectStmt, (err, rows) => {
-      if (err) throw err;
+      if (err) return reject(err);
       resolve(rows);
     });
   });
@@ -29,48 +30,60 @@ const selectAll = (selectStmt) => {
 const selectOne = (selectStmt) => {
   return new Promise((resolve, reject) => {
     db.each(selectStmt, (err, row) => {
-      if (err) throw err;
+      if (err) return reject(err);
       resolve(row);
     });
   });
 }
 
 const saveImage = (image, username) => {
-  // TODO check for duplicate username ?
-  db.run(`insert or replace into images values (?, ?, ?, ?)`, [username, image.url, image.id, image.deleteHash], function(err) {
-    if (err) {
-      return console.log(err.message);
-    }
-    console.log(`Inserted row:`);
-
-    selectOne(`select * from images where username='${username}'`).then((err, res) => {
-      if (err) console.log(err);
-      else console.log(res);
-    }).catch(console.log);
+  return new Promise((resolve, reject) => {
+    db.run(`insert or replace into images values (?, ?, ?, ?)`, [username, image.url, image.id, image.deleteHash], function(err) {
+      if (err) {
+        return reject(`DB Error saveImage: ${err.message}`);
+      }
+      selectOne(`select * from images where username='${username}'`).then(row => {
+        resolve(row);
+      }).catch(err => {
+        reject(`DB Error saveImage catch: ${err}`);
+      });
+    });
   });
 };
 
+const selectImage = (username) => {
+  return new Promise((resolve, reject) => {
+    db.get('select * from images where username=?', [username], function(err, row) {
+      if (err) {
+        return reject({
+          code: 500,
+          text: `DB Error exists query: ${err.message}`
+        });
+      }
+      if (!row) {
+        return reject({
+          code: 404,
+          text: 'DB Error selectImage row does not exist'
+        });
+      }
+      resolve(row);
+    });
+  })
+}
+
 db.serialize(create);
 
-selectAll("select * from images").then((err, res) => {
-  if (err) console.log(err);
-  else console.log(res);
-});
+// selectAll("select * from images").then(console.log);
 
-// selectOne("select * from images where username = 'cornwall'").then((err, res) => {
-//   if (err) console.log(err);
-//   else console.log(res);
-// });
+// selectOne("select * from images where username = 'cornwall'").then(console.log);
 
 // db.run("insert into images values (64, 'cat')");
 // db.run("update images set username='terrier' where username='bobby'");
 
-// selectAll("select * from images").then((err, res) => {
-//   if (err) console.log(err);
-//   else console.log(res);
-// });
+// selectAll("select * from images").then(console.log);
 
 module.exports = {
   close: db.close,
-  saveImage
+  saveImage,
+  selectImage
 };

@@ -33,18 +33,17 @@ app.post('/upload', function(req, res) {
 
   // upload to imgur and save result to db
   imgur.upload(coverPhoto)
-    .then(image => {
-      db.saveImage(image, username);
+    .then(imageObj => {
+      return db.saveImage(imageObj, username);
+    })
+    .then(dbEntry => {
+      res.sendFile(path.join(__dirname + '/../public/index.html'));
     })
     .catch(error => {
+      console.log('error caught ');
+      res.status(500).send(error);
       console.log(error)
     });
-
-  res.writeHead(200, {
-    'Content-Type': coverPhoto.type,
-    'Content-Length': coverPhoto.size
-  });
-  res.end(Buffer.from(coverPhotoFile.data, 'base64'));
 });
 
 module.exports = {
