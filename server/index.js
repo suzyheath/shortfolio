@@ -22,7 +22,7 @@ app.post('/register', function(req, res, next) {
       const token = jwt.sign({ username }, keys.jwtSecret);
       res.status(200)
         .cookie('auth', { token }, { maxAge: 30 * 60 * 1000 })
-        .render('edit', {});
+        .render('edit', { username });
     })
     .catch(err => {
       handleError(err, res, 'createUser');
@@ -39,7 +39,7 @@ app.post('/login', function(req, res, next) {
       const token = jwt.sign({ username }, keys.jwtSecret);
       res.status(200)
         .cookie('auth', { token }, { maxAge: 30 * 60 * 1000 })
-        .render('edit', {});
+        .render('edit', { username });
     })
     .catch(err => {
       handleError(err, res, 'login');

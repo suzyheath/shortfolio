@@ -1,0 +1,47 @@
+html, body, .container {
+  height: 100%;
+  font-family: "Lobster", cursive;
+}
+
+body {
+  background:
+    linear-gradient(
+      rgba(255,255,255, 0.25),
+      rgba(255,255,255, 0.25)
+    ),
+    url('/../skyscrapers.jpeg');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+.container {
+  padding: 10% 20%;
+  height: auto;
+}
+
+#title {
+  font-size: 40px;
+}
+
+#bio {
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+
+.container-home {
+  padding: 10% 37%;
+  text-align: center;
+}
+
+  .container-home #title {
+    font-size: 70px;
+    margin: 0px;
+  }
+
+  .container-home #bio {
+    font-size: 25px;
+    margin-top: 10px;
+    margin-bottom: 30px;
+  }

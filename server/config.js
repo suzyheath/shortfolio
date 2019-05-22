@@ -1,5 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const hbs = require('hbs');
 
 const keys = require('./../keys');
 
@@ -26,6 +27,8 @@ app.use(function(req, res, next) {
     next();
   }
 });
+
+hbs.registerPartials(__dirname + '/views/partials');
 
 let port = process.env.port || 8080;
 

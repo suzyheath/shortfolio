@@ -3,19 +3,32 @@
 <head>
   <title>Shortfolio</title>
   <meta charset="utf-8" />
+  <link rel="stylesheet" href="/styles/general.css" />
+  <link rel="stylesheet" href="/styles/buttons.css" />
+  <link rel="stylesheet" href="/styles/animate.css" />
+  <link href="https://fonts.googleapis.com/css?family=Lobster&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h1>Shortfolio</h1>
-  <p>Your own short, sweet, personal page.</p>
-  <form action="register">
-    <input type="submit" value="Register" />
-  </form>
-  <form action="login">
-    <input type="submit" value="Log In" />
-  </form>
-  <br /><br />
-  <form action="printdb">
-    <input type="submit" value="Inspect DB" />
-  </form>
+  <div class="container container-home fade-in">
+    <h1 id="title">Shortfolio</h1>
+
+    <p id="bio">Your short and sweet personal page.<br />Get your name out there.</p>
+  
+    <div class="half-width left">
+      <form action="register">
+        <input class="button left" type="submit" value="Register" />
+     </form>
+    </div>
+    <div class="half-width right">
+      <form action="login">
+        <input class="button right" type="submit" value="Log In" />
+      </form>
+    </div>
+
+    {{!-- <br /><br />
+    <form action="printdb">
+      <input type="submit" value="Inspect DB" />
+    </form> --}}
+  </div>
 </body>
 </html>
