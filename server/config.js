@@ -14,16 +14,17 @@ app.use(express.urlencoded({extended: true}));
 
 // handle session cookies with jwt
 app.use(function(req, res, next) {
-  const token = req.cookies.auth.token;
-  if (token) {
-    let payload = jwt.verifySync(token, keys.jwtSecret);
-    if (payload) {
-      req.user = { username: payload.username };
-      return next();
-    }
-    console.log(`session cookie could not be parsed. err: ${err}`);
+  try {
+    const token = req.cookies.auth.token;
+    jwt.verify(token, keys.jwtSecret, (err, payload) => {
+      if (payload) {
+        req.user = { username: payload.username };
+      }
+      next();
+    });
+  } catch (e) {
+    next();
   }
-  next();
 });
 
 let port = process.env.port || 8080;

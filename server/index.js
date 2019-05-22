@@ -65,11 +65,11 @@ app.post('/edit', function(req, res) {
     return res.status(400).send('No files were uploaded.');
   }
 
-  let username = req.user.username;
-  if (!username) {
+  if (!req.user || !req.user.username) {
     console.log('Not authorised');
     res.render('login', {});
   }
+  let username = req.user.username;
 
   let coverPhotoFile = req.files.coverPhoto;
   if (coverPhotoFile.truncated) {
