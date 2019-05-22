@@ -1,8 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
-
-const logError = (err) => {
-  if (err) console.log(err)
-}
+const bcrypt = require('bcryptjs');
 
 let db = new sqlite3.Database(':memory:', (err) => {
   if (err) {
@@ -13,9 +10,9 @@ let db = new sqlite3.Database(':memory:', (err) => {
 
 const create = () => {
   db.run("create table users (username TEXT PRIMARY KEY, password TEXT NOT NULL, url TEXT NOT NULL)", [], logError);
-  db.run("insert into users values ('doggos', 'test', 'https://i.imgur.com/4FHyn6b.jpg')", [], logError);
-  db.run("insert into users values ('spywhere', 'test', 'https://i.imgur.com/jUreedP.jpg')", [], logError);
-  db.run("insert into users values ('FredTheFarmer', 'test', 'https://i.imgur.com/sbZIj7N.jpg')", [], logError);
+  db.run("insert into users values ('doggos', ?, 'https://i.imgur.com/4FHyn6b.jpg')", [hash('doggos')], logError);
+  db.run("insert into users values ('spywhere', ?, 'https://i.imgur.com/jUreedP.jpg')", [hash('spywhere')], logError);
+  db.run("insert into users values ('FredTheFarmer', ?, 'https://i.imgur.com/sbZIj7N.jpg')", [hash('FredTheFarmer')], logError);
 };
 
 db.serialize(create);
@@ -38,7 +35,8 @@ const createUser = (username, password) => {
       }
       // no user, so put 'em in
       let defaultImageUrl = 'https://i.imgur.com/vBAg1jJ.jpg';
-      db.run('insert or replace into users values (?, ?, ?)', [username, password, defaultImageUrl], function(err) {
+      let hashedPassword = hash(password);
+      db.run('insert or replace into users values (?, ?, ?)', [username, hashedPassword, defaultImageUrl], function(err) {
         if (err) {
           return reject({
             code: 500,
@@ -47,7 +45,7 @@ const createUser = (username, password) => {
         }
         resolve({
           username,
-          password,
+          hashedPassword,
           url: defaultImageUrl
         });
         console.log(`Created user ${username}`);
@@ -56,9 +54,39 @@ const createUser = (username, password) => {
   });
 };
 
+const loginUser = (username, password) => {
+  return new Promise((resolve, reject) => {
+    // check if user exists
+    db.get('select password from users where username=?', [username], function(err, row) {
+      if (err) {
+        return reject({
+          code: 500,
+          text: `DB Error in createUser selecting: ${err.message}`
+        });
+      }
+      if (!row) {
+        return reject({
+          code: 400,
+          text: `Invalid username or password`
+        });
+      }
+      let validPassword = checkHash(password, row.password);
+      if (!validPassword) {
+        reject({
+          code: 400,
+          text: `Invalid username or password`
+        });
+      } else {
+        // do some good stuff with cookies ?
+        resolve(username);
+      }
+    });
+  });
+};
+
 const updateImageUrl = (imageUrl, username) => {
   return new Promise((resolve, reject) => {
-    db.get('select * from users where username=?', [username], function(err, row) {
+    db.get('select username, password from users where username=?', [username], function(err, row) {
       if (err) {
         return reject({
           code: 500,
@@ -110,9 +138,10 @@ const getImageUrl = (username) => {
 module.exports = {
   close: db.close,
   createUser,
+  loginUser,
   updateImageUrl,
   getImageUrl,
-  selectAll
+  selectAll // remove this after dev
 };
 
 /* debugging tools */
@@ -124,20 +153,16 @@ function selectAll() {
   });
 }
 
-const selectOne = (selectStmt) => {
-  return new Promise((resolve, reject) => {
-    db.each(selectStmt, (err, row) => {
-      if (err) return reject(err);
-      resolve(row);
-    });
-  });
-};
+/* helpers */
 
-// selectAll("select * from users").then(console.log);
+function logError(err) {
+  if (err) console.log(err)
+}
 
-// selectOne("select * from users where username = 'cornwall'").then(console.log);
+function hash(password) {
+  return bcrypt.hashSync(password, 8);
+}
 
-// db.run("insert into users values (64, 'cat')");
-// db.run("update users set username='terrier' where username='bobby'");
-
-// selectAll("select * from users").then(console.log);
+function checkHash(password, hash) {
+  return bcrypt.compareSync(password, hash);
+}

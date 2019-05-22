@@ -1,4 +1,5 @@
 const axios = require('axios');
+
 const keys = require('./../keys').imgur;
 
 const upload = (coverPhoto) => {

@@ -1,6 +1,9 @@
+const jwt = require('jsonwebtoken');
+
 const config = require('./config');
 const imgur = require('./imgur')
 const db = require('./database');
+const keys  = require('./../keys');
 
 const app = config.app;
 
@@ -13,9 +16,13 @@ app.get('/register', function(req, res, next) {
 });
 
 app.post('/register', function(req, res, next) {
-  db.createUser(req.body.username, req.body.password)
-    .then(user => {
-      res.render('home', {}); // TODO send to admin panel to edit personal page
+  let username = req.body.username;
+  db.createUser(username, req.body.password)
+    .then(() => {
+      const token = jwt.sign({ username }, keys.jwtSecret);
+      res.status(200)
+        .cookie('auth', { token }, { maxAge: 30 * 60 * 1000 })
+        .render('edit', {});
     })
     .catch(err => {
       handleError(err, res, 'createUser');
@@ -23,13 +30,34 @@ app.post('/register', function(req, res, next) {
 });
 
 app.get('/login', function(req, res, next) {
-  console.log("Trying to log in, but we haven't done session cookies yet");
+  res.render('login', {});
+});
+
+app.post('/login', function(req, res, next) {
+  db.loginUser(req.body.username, req.body.password)
+    .then((username) => {
+      const token = jwt.sign({ username }, keys.jwtSecret);
+      res.status(200)
+        .cookie('auth', { token }, { maxAge: 30 * 60 * 1000 })
+        .render('edit', {});
+    })
+    .catch(err => {
+      handleError(err, res, 'login');
+    });
+});
+
+app.get('/logout', function(req, res, next) {
+  res.clearCookie('auth');
   res.render('home', {});
 });
 
 app.get('/edit', function(req, res, next) {
-  // TODO check session cookie
-  res.render('edit', {});
+  if (req.user) { // if logged in
+    res.render('edit', { username: req.user.username });
+  } else {
+    console.log('Not authorised');
+    res.render('login', {});
+  }
 });
 
 app.post('/edit', function(req, res) {
@@ -37,9 +65,10 @@ app.post('/edit', function(req, res) {
     return res.status(400).send('No files were uploaded.');
   }
 
-  let username = req.body.username;
-  if (username == null || username == '' || username == ' ') {
-    return res.status(400).send('No username entered');
+  let username = req.user.username;
+  if (!username) {
+    console.log('Not authorised');
+    res.render('login', {});
   }
 
   let coverPhotoFile = req.files.coverPhoto;
@@ -74,7 +103,7 @@ app.get('/printdb', function(req, res, next) {
   res.render('home', {});
 });
 
-app.get('/:username', function(req, res, next) {
+app.get('/u/:username', function(req, res, next) {
   let username = req.params.username;
 
   // see if username is in db
