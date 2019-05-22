@@ -3,16 +3,22 @@
 <head>
   <title>Shortfolio</title>
   <meta charset="utf-8" />
+  <link rel="stylesheet" href="/styles/general.css" />
+  <link rel="stylesheet" href="/styles/buttons.css" />
+  <link rel="stylesheet" href="/styles/animate.css" />
+  <link href="https://fonts.googleapis.com/css?family=Lobster&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h1>Log In</h1>
-  <p>Customise your portfolio.</p>
-  <form id='loginForm'
+  <div class="container container-narrow fade-in">
+    <h1 id="title">Log In</h1>
+    <p id="bio">Welcome back.</p>
+    <form id='loginForm'
       action='login'
       method='post'>
-        <input type="text" name="username" id="username" placeholder="Username" /><br />
-        <input type="text" name="password" id="password" placeholder="Password" /><br />
-        <input type='submit' value='Log In' />
+        <input type="text" name="username" id="username" placeholder="Username" class="input-field" /><br />
+        <input type="text" name="password" id="password" placeholder="Password" class="input-field" /><br /><br />
+        <input type='submit' value='OK!' class="button" />
     </form>
+  </div>
 </body>
 </html>

@@ -3,6 +3,11 @@ html, body, .container {
   font-family: "Lobster", cursive;
 }
 
+html, body { /* remove scroll bars */
+  margin: 0;
+  padding: 0;
+}
+
 body {
   background:
     linear-gradient(
@@ -30,18 +35,44 @@ body {
   margin-bottom: 20px;
 }
 
-.container-home {
+.container-narrow {
   padding: 10% 37%;
   text-align: center;
 }
 
-  .container-home #title {
+  .container-narrow #title {
     font-size: 70px;
     margin: 0px;
   }
 
-  .container-home #bio {
+  .container-narrow #bio {
     font-size: 25px;
     margin-top: 10px;
     margin-bottom: 30px;
   }
+
+/* register / login */
+
+.input-field {
+  padding: 4px 8px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  box-sizing: border-box;
+  background:
+    linear-gradient(
+      rgba(255,255,255, 0.8),
+      rgba(255,255,255, 0.8)
+    );
+  border: 1px black;
+  font-size: 15px;
+  font-family: "Lobster", cursive;
+}
+
+.input-field:focus {
+  background:
+    linear-gradient(
+      rgba(255,255,255, 1),
+      rgba(255,255,255, 1)
+    );
+}
+
