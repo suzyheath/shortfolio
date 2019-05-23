@@ -21,41 +21,46 @@ body {
   background-size: cover;
 }
 
-.container {
-  padding: 10% 20%;
-  height: auto;
-}
-
-#title {
+.title {
   font-size: 40px;
 }
 
-#bio {
+.bio {
   font-size: 15px;
   margin-bottom: 20px;
 }
 
-.container-narrow {
+.container {
   padding: 10% 37%;
   text-align: center;
+  height: auto;
 }
 
-  .container-narrow #title {
+  .container .title {
     font-size: 70px;
     margin: 0px;
   }
 
-  .container-narrow #bio {
+  .container .bio {
     font-size: 25px;
     margin-top: 10px;
     margin-bottom: 30px;
   }
 
-/* register / login */
+.container.wide {
+  padding: 10% 20%;
+}
+
+.container-personal {
+  text-align: left;
+  padding: 10% 20%;
+}
+
+/* text input fields */
 
 .input-field {
   padding: 4px 8px;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   border-radius: 5px;
   box-sizing: border-box;
   background:
@@ -69,6 +74,28 @@ body {
 }
 
 .input-field:focus {
+  background:
+    linear-gradient(
+      rgba(255,255,255, 1),
+      rgba(255,255,255, 1)
+    );
+}
+
+.textarea {
+  border: 0px;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-family: "Lobster", cursive;
+  font-size: 15px;
+  resize: none;
+  background:
+    linear-gradient(
+      rgba(255,255,255, 0.8),
+      rgba(255,255,255, 0.8)
+    );
+}
+
+.textarea:focus {
   background:
     linear-gradient(
       rgba(255,255,255, 1),

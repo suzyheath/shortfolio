@@ -32,7 +32,20 @@ hbs.registerPartials(__dirname + '/views/partials');
 
 let port = process.env.port || 8080;
 
+function handleError(err, res, template) {
+  // catch any custom built error objects
+  if ('code' in err && 'text' in err) {
+    res.status(err.code)
+      .render(template, { error: `${err.code}: ${err.text}` });
+    console.log(`Error '${template}' ${err.code}: ${err.text}`)
+  } else {
+    res.status(500).send('Server error');
+    console.log(err);
+  }
+}
+
 module.exports = {
   app,
-  port
+  port,
+  handleError
 };

@@ -10,10 +10,11 @@
   <link href="https://fonts.googleapis.com/css?family=Lobster&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="container container-narrow container-edit fade-in">
-    <h1 id="title">Edit Page</h1>
-    <p id="bio">Welcome, {{username}}.<br />Customise your portfolio.</p>
-    <form id='editForm'
+  <div class="container container wide">
+    <h1 class="title">Edit Page</h1>
+    <p class="bio">Welcome, {{username}}.<br />Customise your portfolio.</p>
+    <div class="fade-in">
+      <form id='editForm'
         action='edit'
         method='post'
         encType="multipart/form-data">
@@ -22,10 +23,11 @@
           <input type="file" name="coverPhoto" id="coverPhoto" /><label for="coverPhoto">Upload Background Image</label>
           <br /><br /><br />
           <input type='submit' value='GO!' class="button" />
-    </form>
+      </form>
+    </div>
     <p id="error">{{error}}</p>
   </div>
-  <form action="logout" class="top-left fade-in late" >
+  <form action="logout" class="top-left" >
       <input type="submit" value="Logout" class="button" />
   </form>
 

@@ -1,12 +1,3 @@
-.container-edit {
-  padding: 10% 37%;
-  text-align: center;
-}
-
-input.input-field, input {
-  margin-bottom: 15px;
-}
-
 /* upload button */ 
 
 [type="file"] {

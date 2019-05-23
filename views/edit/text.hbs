@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Shortfolio</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="/styles/general.css" />
+  <link rel="stylesheet" href="/styles/buttons.css" />
+  <link rel="stylesheet" href="/styles/animate.css" />
+  <link rel="stylesheet" href="/styles/edit.css" />
+  <link href="https://fonts.googleapis.com/css?family=Lobster&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container container wide fade-in">
+    <h1 class="title">Edit Page</h1>
+    <p class="bio">Welcome, {{username}}.<br />Customise your portfolio.</p>
+    <form id='editForm'
+        action='editText'
+        method='post'
+        encType="multipart/form-data">
+          <input type="text" name="title" id="title-input" placeholder="Title" class="input-field" /><br />
+          <textarea id="bio" name="bio" rows="5" cols="70" placeholder="Bio..." class="textarea"></textarea>
+          <br /><br /><br />
+          <input type='submit' value='GO!' class="button" />
+    </form>
+    <p id="error">{{error}}</p>
+  </div>
+  <form action="logout" class="top-left fade-in late" >
+      <input type="submit" value="Logout" class="button" />
+  </form>
+</body>
+</html>
