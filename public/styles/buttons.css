@@ -11,6 +11,7 @@
   font-family: "Lobster", cursive;
   border-radius: 5px;
   border: 0px;
+  margin-top: 1px;
 }
 
 .button:hover {
@@ -19,7 +20,8 @@
       rgba(0, 0, 0, 0.4),
       rgba(0,0,0, 0.2)
     );
-  padding: 10px 16px;
+  padding: 11px 16px;
+  margin-top: 0px;
 }
 
 .button.left {
@@ -30,6 +32,13 @@
   float: left;
   margin-left: 5px;
 }
+.button.left:hover {
+  margin-right: 4px;
+}
+.button.right:hover {
+  margin-left: 4px;
+}
+
 
 .half-width {
   width: 50%;
@@ -39,4 +48,30 @@
 }
 .half-width.right {
   float: right;
+}
+
+
+.top-left {
+  position: fixed;
+  top: 30px;
+  left: 50px;
+  color: white;
+}
+
+.top-left .button {
+  background:
+    linear-gradient(
+      rgba(255,255,255, 0.4),
+      rgba(255,255,255, 0.3)
+    );
+  margin-left: 1px;
+}
+
+.top-left .button:hover {
+  background:
+    linear-gradient(
+      rgba(255, 255, 255, 0.6),
+      rgba(255,255,255, 0.5)
+    );
+  margin-left: 0px;
 }

@@ -3,29 +3,6 @@
   text-align: center;
 }
 
-.logout {
-  position: fixed;
-  top: 30px;
-  left: 50px;
-  color: white;
-}
-
-.logout .button {
-  background:
-    linear-gradient(
-      rgba(255,255,255, 0.4),
-      rgba(255,255,255, 0.3)
-    );
-}
-
-.logout .button:hover {
-  background:
-    linear-gradient(
-      rgba(255, 255, 255, 0.6),
-      rgba(255,255,255, 0.5)
-    );
-}
-
 input.input-field, input {
   margin-bottom: 15px;
 }

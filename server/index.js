@@ -29,7 +29,7 @@ app.post('/register', function(req, res, next) {
         .render('edit', { username });
     })
     .catch(err => {
-      handleError(err, res, 'createUser');
+      handleError(err, res, 'register');
     });
 });
 
@@ -69,19 +69,28 @@ app.get('/edit', function(req, res, next) {
 });
 
 app.post('/edit', function(req, res) {
-  if (Object.keys(req.files).length == 0) {
-    return res.status(400).send('No files were uploaded.');
-  }
-
   if (!req.user || !req.user.username) {
     console.log('Not authorised');
     res.render('login', {});
   }
+
+  if (!req.files || Object.keys(req.files).length == 0) {
+    return res.status(400)
+            .render('edit', { 
+              username: req.user.username,
+              error: 'Please select an image'
+            });
+  }
+
   let username = req.user.username;
 
   let coverPhotoFile = req.files.coverPhoto;
   if (coverPhotoFile.truncated) {
-    return res.status(400).send('Cover photo too large.');
+    return res.status(400)
+            .render('edit', { 
+              username: req.user.username,
+              error: 'Cover photo too large'
+            });
   }
 
   let coverPhoto = {
@@ -90,6 +99,14 @@ app.post('/edit', function(req, res) {
     type: coverPhotoFile.mimetype
   };
 
+  if (coverPhoto.type != 'image/jpeg' && coverPhoto.type != 'image/png') {
+    return res.status(400)
+            .render('edit', { 
+              username: req.user.username,
+              error: 'Invalid file type'
+            });
+  }
+
   // upload to imgur and save result to db
   imgur.upload(coverPhoto)
     .then(imageUrl => {
@@ -97,12 +114,12 @@ app.post('/edit', function(req, res) {
     })
     .then(dbEntry => {
       res.render('personal', {
-        username,
+        title: dbEntry.title,
         imageUrl: dbEntry.url
       });
     })
     .catch(err => {
-      handleError(err, res, 'updateImageUrl');
+      handleError(err, res, 'edit');
     });
 });
 
@@ -115,24 +132,25 @@ app.get('/u/:username', function(req, res, next) {
   let username = req.params.username;
 
   // see if username is in db
-  db.getImageUrl(username)
-    .then(imageUrl => {
+  db.getPortfolio(username)
+    .then(row => {
       // serve image
       res.render('personal', {
-        username,
-        imageUrl
+        title: row.title,
+        imageUrl: row.url
       });
     })
     .catch(err => {
-      handleError(err, res, 'getImageUrl');
+      handleError(err, res, 'getPortfolio');
     });
 });
 
-function handleError(err, res, method) {
+function handleError(err, res, template) {
   // catch any custom built error objects
   if ('code' in err && 'text' in err) {
-    res.status(err.code).send(err.text);
-    console.log(`Error in ${method}, ${err.code}: ${err.text}`)
+    res.status(err.code)
+      .render(template, { error: `${err.code}: ${err.text}` });
+    console.log(`Error '${template}' ${err.code}: ${err.text}`)
   } else {
     res.status(500).send('Server error');
     console.log(err);
