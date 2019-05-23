@@ -83,6 +83,7 @@ app.get('/u/:username', function(req, res, next) {
       // serve image
       res.render('personal', {
         title: row.title,
+        bio: row.bio,
         imageUrl: row.url
       });
     })

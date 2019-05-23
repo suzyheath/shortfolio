@@ -109,7 +109,6 @@ const updateImageUrl = (imageUrl, username) => {
 };
 
 const getPortfolio = (username) => {
-  username = username.toLowerCase();
   return new Promise((resolve, reject) => {
     getUserByUsername(username)
       .then((row) => {
@@ -124,10 +123,35 @@ const getPortfolio = (username) => {
   });
 };
 
+const updateTitleAndBio = (username, title, bio) => {
+  return new Promise((resolve, reject) => {
+    getUserByUsername(username)
+      .then((row) => {
+        if (!row) {
+          return reject(em.newErr(404, 'User not found'));
+        }
+
+        insertOrReplaceUser(row.username, row.password, row.url, title, bio)
+          .then(() => {
+            row.title = title;
+            row.bio = bio;
+            resolve(row);
+            console.log(`Updated title and bio for user ${username}`)
+          })
+          .catch(err => {
+            reject(em.newErr(500, `DB Error in updateImageUrl insertOrReplaceUser catch block: ${err}`));
+          });
+      })
+      .catch(err => {
+        reject(em.newErr(500, `DB Error in updateTitleAndBio getUserByUsername catch block: ${err}`));
+      });
+  });
+}
+
 /* create db */
 
 const defaultImageUrl = 'https://i.imgur.com/vBAg1jJ.jpg';
-const defaultBio = 'This is your bio. Write whatever you want, for example about yourself, career, hobbies or interests.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
+const defaultBio = 'This is your bio. Write whatever you want, for example about yourself, career, hobbies or interests. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
 
 const create = () => {
   db.run("create table users (username TEXT PRIMARY KEY, password TEXT NOT NULL, url TEXT NOT NULL, title TEXT NOT NULL, bio TEXT NOT NULL)", [], logError);
@@ -144,6 +168,7 @@ module.exports = {
   loginUser,
   updateImageUrl,
   getPortfolio,
+  updateTitleAndBio,
   selectAll // remove this after dev
 };
 

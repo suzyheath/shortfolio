@@ -15,16 +15,22 @@
     <p class="bio">Welcome, {{username}}.<br />Customise your portfolio.</p>
     <div class="fade-in">
       <form id='editForm'
-        action='edit'
+        action='editImage'
         method='post'
         encType="multipart/form-data">
-          <input type="text" name="title" id="title-input" placeholder="Title" class="input-field" />
-          <br />
-          <input type="file" name="coverPhoto" id="coverPhoto" /><label for="coverPhoto">Upload Background Image</label>
+          <input type="file" name="coverPhoto" id="coverPhoto" /><label for="coverPhoto">Change Background Image</label>
           <br /><br /><br />
-          <input type='submit' value='GO!' class="button" />
+
+          <div class="half-width left">
+            <a href="/u/{{username}}"><button type="button" class="button left">Skip</button></a>
+          </div>
+          <div class="half-width right">
+            <input class="button right" type="submit" value="GO!" />
+          </div>
+          {{!-- <input type='submit' value='GO!' class="button" /> --}}
       </form>
     </div>
+    <br /><br />
     <p id="error">{{error}}</p>
   </div>
   <form action="logout" class="top-left" >

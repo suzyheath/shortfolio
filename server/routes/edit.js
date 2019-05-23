@@ -29,12 +29,18 @@ app.post('/editText', function(req, res) {
       error: 'No bio provided'
     });
   }
-
-
-  return res.status(500).send('Under construction');
+  db.updateTitleAndBio(req.user.username, req.body.title, req.body.bio)
+    .then((row) => {
+      res.render('edit/image', {
+        username: req.user.username
+      });
+    })
+    .catch(err => {
+      error.handleError(err, res, 'edit/text');
+    });
 });
 
-app.post('/edit', function(req, res) {
+app.post('/editImage', function(req, res) {
   if (!req.user || !req.user.username) {
     console.log('Not authorised');
     return res.render('login', {});
@@ -42,7 +48,7 @@ app.post('/edit', function(req, res) {
 
   if (!req.files || Object.keys(req.files).length == 0) {
     return res.status(400)
-            .render('edit', { 
+            .render('edit/image', { 
               username: req.user.username,
               error: 'Please select an image'
             });
@@ -53,7 +59,7 @@ app.post('/edit', function(req, res) {
   let coverPhotoFile = req.files.coverPhoto;
   if (coverPhotoFile.truncated) {
     return res.status(400)
-            .render('edit', { 
+            .render('edit/image', { 
               username: req.user.username,
               error: 'Cover photo too large'
             });
@@ -67,7 +73,7 @@ app.post('/edit', function(req, res) {
 
   if (coverPhoto.type != 'image/jpeg' && coverPhoto.type != 'image/png') {
     return res.status(400)
-            .render('edit', { 
+            .render('edit/image', { 
               username: req.user.username,
               error: 'Invalid file type'
             });
@@ -81,10 +87,11 @@ app.post('/edit', function(req, res) {
     .then(dbEntry => {
       res.render('personal', {
         title: dbEntry.title,
+        bio: dbEntry.bio,
         imageUrl: dbEntry.url
       });
     })
     .catch(err => {
-      error.handleError(err, res, 'edit');
+      error.handleError(err, res, 'edit/image');
     });
 });
