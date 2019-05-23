@@ -1,6 +1,8 @@
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcryptjs');
 
+const em = require('./error');
+
 let db = new sqlite3.Database(':memory:', (err) => {
   if (err) {
     return console.error(err.message);
@@ -8,56 +10,55 @@ let db = new sqlite3.Database(':memory:', (err) => {
   console.log('Connected to the in-memory SQlite database.');
 });
 
-const create = () => {
-  db.run("create table users (username TEXT PRIMARY KEY, password TEXT NOT NULL, url TEXT NOT NULL, title TEXT NOT NULL)", [], logError);
-  db.run("insert into users values ('doggos', ?, 'https://i.imgur.com/4FHyn6b.jpg', 'Two Good Doggos')", [hash('doggos')], logError);
-  db.run("insert into users values ('spywhere', ?, 'https://i.imgur.com/jUreedP.jpg', 'SPYWHERE!')", [hash('spywhere')], logError);
-  db.run("insert into users values ('fredthefarmer', ?, 'https://i.imgur.com/sbZIj7N.jpg', 'Fred The Farmer')", [hash('fredthefarmer')], logError);
-};
-
-db.serialize(create);
-
-const createUser = (username, password) => {
+const getUserByUsername = (username) => {
   username = username.toLowerCase();
   return new Promise((resolve, reject) => {
-    if (username.includes(' ')) {
-      return reject({
-        code: 400,
-        text: `Username should cannot contain spaces`
-      });
-    }
-    // check if user already exists
-    db.get('select * from users where username=?', [username], function(err, row) {
-      if (err) {
-        return reject({
-          code: 500,
-          text: `DB Error in createUser selecting: ${err.message}`
-        });
-      }
-      if (row) {
-        return reject({
-          code: 400,
-          text: `User already exists with username ${username}`
-        });
-      }
-      // no user, so put 'em in
-      let defaultImageUrl = 'https://i.imgur.com/vBAg1jJ.jpg';
-      let hashedPassword = hash(password);
-      db.run('insert or replace into users values (?, ?, ?, ?)', [username, hashedPassword, defaultImageUrl, username], function(err) {
-        if (err) {
-          return reject({
-            code: 500,
-            text: `DB Error in createUser inserting: ${err.message}`
-          });
-        }
-        resolve({
-          username,
-          hashedPassword,
-          url: defaultImageUrl
-        });
-        console.log(`Created user ${username}`);
-      });
+    db.get('select * from users where username=?', [username], (err, res) => {
+      if (err) return reject(err);
+      resolve(res);
     });
+  });
+}
+
+const insertOrReplaceUser = (username, password, imageUrl, title, bio) => {
+  username = username.toLowerCase();
+  return new Promise((resolve, reject) => {
+    db.run('insert or replace into users values (?, ?, ?, ?, ?)', [username, password, imageUrl, title, bio], (err) => {
+      if (err) return reject(err);
+      resolve();
+    });
+  });
+}
+
+const createUser = (username, password) => {
+  return new Promise((resolve, reject) => {
+    if (username.includes(' ')) {
+      return reject(em.newErr(400, `Username should cannot contain spaces`));
+    }
+
+    getUserByUsername(username)
+      .then((row) => {
+        if (row) {
+          return reject(em.newErr(400, `User already exists with username ${username}`));
+        }
+        // no user, so put 'em in
+        let hashedPassword = hash(password);
+        insertOrReplaceUser(username, hashedPassword, defaultImageUrl, username, defaultBio)
+          .then(() => {
+            resolve({
+              username,
+              hashedPassword,
+              url: defaultImageUrl
+            });
+            console.log(`Created user ${username}`);
+          })
+          .catch(err => {
+            reject(em.newErr(500, `DB Error in createUser insertOrReplaceUser catch block: ${err}`));
+          });
+      })
+      .catch(err => {
+        reject(em.newErr(500, `DB Error in createUser getUserByUsername catch block: ${err}`));
+      });
   });
 };
 
@@ -65,84 +66,77 @@ const loginUser = (username, password) => {
   username = username.toLowerCase();
   return new Promise((resolve, reject) => {
     // check if user exists
-    db.get('select password from users where username=?', [username], function(err, row) {
-      if (err) {
-        return reject({
-          code: 500,
-          text: `DB Error in createUser selecting: ${err.message}`
-        });
-      }
-      if (!row) {
-        return reject({
-          code: 400,
-          text: `Invalid username or password`
-        });
-      }
-      let validPassword = checkHash(password, row.password);
-      if (!validPassword) {
-        reject({
-          code: 400,
-          text: `Invalid username or password`
-        });
-      } else {
-        // do some good stuff with cookies ?
-        resolve(username);
-      }
-    });
+    getUserByUsername(username)
+      .then((row) => {
+        if (!row) {
+          return reject(em.newErr(400, `Invalid username or password ${username} ${password}`));
+        }
+        let validPassword = checkHash(password, row.password);
+        if (!validPassword) {
+          reject(em.newErr(400, `Invalid username or password`));
+        } else {
+          resolve(username);
+        }
+      })
+      .catch(err => {
+        reject(em.newErr(500, `DB Error in loginUser getUserByUsername catch block: ${err}`));
+      });
   });
 };
 
 const updateImageUrl = (imageUrl, username) => {
   return new Promise((resolve, reject) => {
-    db.get('select * from users where username=?', [username], function(err, row) {
-      if (err) {
-        return reject({
-          code: 500,
-          text: `DB Error in updateImageUrl selecting: ${err.message}`
-        });
-      }
-      if (!row) {
-        return reject({
-          code: 404,
-          text: 'Page not found'
-        });
-      }
-
-      db.run('insert or replace into users values (?, ?, ?, ?)', [row.username, row.password, imageUrl, row.title], function(err) {
-        if (err) {
-          return reject({
-            code: 500,
-            text: `DB Error in updateImageUrl inserting: ${err.message}`
-          });
+    getUserByUsername(username)
+      .then((row) => {
+        if (!row) {
+          return reject(em.newErr(404, 'Page not found'));
         }
-        row.url = imageUrl;
-        resolve(row);
-        console.log(`Updated image for user ${username}`)
+
+        insertOrReplaceUser(row.username, row.password, imageUrl, row.title, row.bio)
+          .then(() => {
+            row.url = imageUrl;
+            resolve(row);
+            console.log(`Updated image for user ${username}`)
+          })
+          .catch(err => {
+            reject(em.newErr(500, `DB Error in updateImageUrl insertOrReplaceUser catch block: ${err}`));
+          });
+      })
+      .catch(err => {
+        reject(em.newErr(500, `DB Error in updateImageUrl getUserByUsername catch block: ${err}`));
       });
-    });
   });
 };
 
 const getPortfolio = (username) => {
   username = username.toLowerCase();
   return new Promise((resolve, reject) => {
-    db.get('select title, url from users where username=?', [username], function(err, row) {
-      if (err) {
-        return reject({
-          code: 500,
-          text: `DB Error getPortfolio: ${err.message}`
-        });
-      }
-      if (!row) {
-        return reject({
-          code: 404,
-          text: 'DB Error getPortfolio row does not exist'
-        });
-      }
-      resolve(row);
-    });
+    getUserByUsername(username)
+      .then((row) => {
+        if (!row) {
+          return reject(em.newErr(404, 'DB Error getPortfolio row does not exist'));
+        }
+        resolve(row);
+      })
+      .catch(err => {
+        reject(em.newErr(500, `DB Error in getPortfolio getUserByUsername catch block: ${err}`));
+      });
   });
 };
+
+/* create db */
+
+const defaultImageUrl = 'https://i.imgur.com/vBAg1jJ.jpg';
+const defaultBio = 'This is your bio. Write whatever you want, for example about yourself, career, hobbies or interests.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
+
+const create = () => {
+  db.run("create table users (username TEXT PRIMARY KEY, password TEXT NOT NULL, url TEXT NOT NULL, title TEXT NOT NULL, bio TEXT NOT NULL)", [], logError);
+  db.run("insert into users values ('doggos', ?, 'https://i.imgur.com/4FHyn6b.jpg', 'Two Good Doggos', ?)", [hash('doggos'), defaultBio], logError);
+  db.run("insert into users values ('spywhere', ?, 'https://i.imgur.com/jUreedP.jpg', 'SPYWHERE!', ?)", [hash('spywhere'), defaultBio], logError);
+  db.run("insert into users values ('fredthefarmer', ?, 'https://i.imgur.com/sbZIj7N.jpg', 'Fred The Farmer', ?)", [hash('fredthefarmer'), defaultBio], logError);
+};
+
+db.serialize(create);
 
 module.exports = {
   close: db.close,

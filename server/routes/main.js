@@ -1,10 +1,9 @@
 const jwt = require('jsonwebtoken');
 
-const server = require('./../server');
+const app = require('./../server').app;
+const error = require('./../error');
 const db = require('./../database');
 const keys  = require('./../../keys');
-
-let app = server.app;
 
 app.get('/', function(req, res, next) {
   res.render('home', {});
@@ -19,6 +18,12 @@ app.get('/register', function(req, res, next) {
 });
 
 app.post('/register', function(req, res, next) {
+  if (!req.body || !req.body.username) {
+    return res.render('register', { error: 'Please enter a username' });
+  }
+  if (!req.body.password) {
+    return res.render('register', { error: 'Please enter a password' });
+  }
   let username = req.body.username;
   db.createUser(username, req.body.password)
     .then(() => {
@@ -28,7 +33,7 @@ app.post('/register', function(req, res, next) {
         .render('edit/text', { username });
     })
     .catch(err => {
-      server.renderError(err, res, 'register');
+      error.handleError(err, res, 'register');
     });
 });
 
@@ -41,6 +46,12 @@ app.get('/login', function(req, res, next) {
 });
 
 app.post('/login', function(req, res, next) {
+  if (!req.body || !req.body.username) {
+    return res.render('login', { error: 'Please enter a username' });
+  }
+  if (!req.body.password) {
+    return res.render('login', { error: 'Please enter a password' });
+  }
   db.loginUser(req.body.username, req.body.password)
     .then((username) => {
       const token = jwt.sign({ username }, keys.jwtSecret);
@@ -49,7 +60,7 @@ app.post('/login', function(req, res, next) {
         .render('edit/text', { username });
     })
     .catch(err => {
-      server.renderError(err, res, 'login');
+      error.handleError(err, res, 'login');
     });
 });
 
@@ -76,6 +87,6 @@ app.get('/u/:username', function(req, res, next) {
       });
     })
     .catch(err => {
-      server.renderError(err, res, 'getPortfolio');
+      error.handleError(err, res, 'home');
     });
 });

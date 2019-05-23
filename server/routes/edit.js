@@ -1,8 +1,7 @@
-const server = require('./../server');
+const app = require('./../server').app;
+const error = require('./../error');
 const imgur = require('./../imgur')
 const db = require('./../database');
-
-let app = server.app;
 
 app.get('/edit', function(req, res, next) {
   if (req.user) { // if logged in
@@ -86,6 +85,6 @@ app.post('/edit', function(req, res) {
       });
     })
     .catch(err => {
-      server.renderError(err, res, 'edit');
+      error.handleError(err, res, 'edit');
     });
 });
