@@ -1,0 +1,75 @@
+.container-edit {
+  padding: 10% 37%;
+  text-align: center;
+}
+
+.logout {
+  position: fixed;
+  top: 30px;
+  left: 50px;
+  color: white;
+}
+
+.logout .button {
+  background:
+    linear-gradient(
+      rgba(255,255,255, 0.4),
+      rgba(255,255,255, 0.3)
+    );
+}
+
+.logout .button:hover {
+  background:
+    linear-gradient(
+      rgba(255, 255, 255, 0.6),
+      rgba(255,255,255, 0.5)
+    );
+}
+
+input.input-field, input {
+  margin-bottom: 15px;
+}
+
+/* upload button */ 
+
+[type="file"] {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute !important;
+  white-space: nowrap;
+  width: 1px;
+}
+
+[type="file"] + label {
+  background:
+    linear-gradient(
+      rgba(255,255,255, 0.8),
+      rgba(200,200,200, 0.8)
+    );
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 15px;
+  font-weight: 700;
+  width: 183px;
+  padding: 5px 0px;
+  transition: background-color 0.3s;
+}
+ 
+[type="file"]:focus + label,
+[type="file"] + label:hover {
+  background:
+    linear-gradient(
+      rgba(255, 255, 255, 0.9),
+      rgba(255,255,255, 0.8)
+    );
+  width: 185px;
+}
+ 
+[type="file"]:focus + label {
+  outline: 1px dotted #000;
+  outline: -webkit-focus-ring-color auto 5px;
+}

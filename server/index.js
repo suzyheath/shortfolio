@@ -12,7 +12,11 @@ app.get('/', function(req, res, next) {
 });
 
 app.get('/register', function(req, res, next) {
-  res.render('register', {});
+  if (req.user) { // if logged in
+    res.render('edit', { username: req.user.username });
+  } else {
+    res.render('register', {});
+  }
 });
 
 app.post('/register', function(req, res, next) {
@@ -30,7 +34,11 @@ app.post('/register', function(req, res, next) {
 });
 
 app.get('/login', function(req, res, next) {
-  res.render('login', {});
+  if (req.user) { // if logged in
+    res.render('edit', { username: req.user.username });
+  } else {
+    res.render('login', {});
+  }
 });
 
 app.post('/login', function(req, res, next) {

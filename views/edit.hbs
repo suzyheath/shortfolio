@@ -3,20 +3,32 @@
 <head>
   <title>Shortfolio</title>
   <meta charset="utf-8" />
+  <link rel="stylesheet" href="/styles/general.css" />
+  <link rel="stylesheet" href="/styles/buttons.css" />
+  <link rel="stylesheet" href="/styles/animate.css" />
+  <link rel="stylesheet" href="/styles/edit.css" />
+  <link href="https://fonts.googleapis.com/css?family=Lobster&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h1>Edit portfolio</h1>
-  <p>Welcome {{username}}</p>
-  <form id='editForm'
-      action='edit'
-      method='post'
-      encType="multipart/form-data">
-        <input type="file" name="coverPhoto" /><br />
-        <input type='submit' value='Upload!' />
+  <div class="container container-narrow container-edit fade-in">
+    <h1 id="title">Edit Page</h1>
+    <p id="bio">Welcome, {{username}}.<br />Customise your portfolio.</p>
+    <form id='editForm'
+        action='edit'
+        method='post'
+        encType="multipart/form-data">
+          <input type="text" name="title" id="title-input" placeholder="Title" class="input-field" />
+          <br />
+          <input type="file" name="coverPhoto" id="coverPhoto" /><label for="coverPhoto">Upload Background Image</label>
+          <br /><br /><br />
+          <input type='submit' value='GO!' class="button" />
+    </form>
+    <br />
+  </div>
+  <form action="logout" class="logout fade-in late" >
+      <input type="submit" value="Logout" class="button" />
   </form>
-  <br />
-  <form action="logout">
-    <input type="submit" value="Logout" />
-  </form>
+
+  <script src="/js/edit.js"></script>
 </body>
 </html>
