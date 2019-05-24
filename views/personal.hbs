@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <title>{{title}}</title>
     <link rel="stylesheet" href="/styles/general.css" />
+    <link rel="stylesheet" href="/styles/animate.css" />
     <style>
       body {
         background:
@@ -23,11 +24,11 @@
     <link href="https://fonts.googleapis.com/css?family=Lobster&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <div class="container-personal">
+    <div class="container-personal fade-in">
       <h1 class="title">{{title}}</h1>
       <p class="bio">{{{bio}}}</p>
     </div>
-    <div class="social-footer fade-in">
+    <div class="social-footer fade-in late">
       {{#each social}}
           <a href={{this.link}} target="_blank">
             <img src="/icons/{{this.platform}}.svg" class="social-icon" />

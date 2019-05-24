@@ -277,18 +277,8 @@ module.exports = {
   updateFont,
   getFont,
   updateSocial,
-  getSocial,
-  selectAll // remove this after dev
+  getSocial
 };
-
-/* debugging tools */
-
-function selectAll() {
-  db.all("select * from users", (err, rows) => {
-    if (err) return console.log(err);
-    console.log(rows);
-  });
-}
 
 /* helpers */
 

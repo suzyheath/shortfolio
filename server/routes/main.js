@@ -69,11 +69,6 @@ app.get('/logout', function(req, res, next) {
   res.render('home', {});
 });
 
-app.get('/printdb', function(req, res, next) {
-  db.selectAll();
-  res.render('home', {});
-});
-
 app.get('/u/:username', function(req, res, next) {
   let username = req.params.username;
 
@@ -97,10 +92,13 @@ app.get('/u/:username', function(req, res, next) {
 function renderEditText(username, res) {
   db.getTitleAndBio(username)
     .then(row => {
+      const bio = (!row.bio)
+                ? ""  // allow no bio
+                : row.bio.replace(/(?:<br>)/g, '\n');
       res.render('edit/text', { 
         username,
         title: `"${row.title}"`,
-        bio: row.bio
+        bio
       });
     })
     .catch(err => {
