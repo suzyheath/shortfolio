@@ -3,8 +3,8 @@ const error = require('./../error');
 const imgur = require('./../imgur')
 const db = require('./../database');
 
-const renderEditTextWithError = (username, error, res) => {
-  res.render('edit/text', { username, error });
+const renderWithError = (page, username, error, res) => {
+  res.render(page, { username, error });
 };
 
 app.get('/edit', function(req, res, next) {
@@ -19,7 +19,7 @@ app.get('/edit', function(req, res, next) {
     })
     .catch(err => {
       console.log(err);
-      renderEditTextWithError(req.user.username, 'Could not retrieve Title or Bio', res);
+      renderWithError('edit/text', req.user.username, 'Could not retrieve title or bio', res);
     });
   } else {
     console.log('Not authorised');
@@ -33,7 +33,7 @@ app.post('/editText', function(req, res) {
     return res.render('login', {});
   }
   if (!req.body || !req.body.title) {
-    return renderEditTextWithError(req.user.username, 'No title provided', res);
+    return renderWithError('edit/text', 'No title provided', res);
   }
   const bio = (!req.body.bio)
                 ? ""  // allow no bio
@@ -83,7 +83,7 @@ app.post('/editImage', function(req, res) {
               error: 'Cover photo too large'
             });
   }
-
+  
   let coverPhoto = {
     encoded: coverPhotoFile.data.toString('base64'),
     size: coverPhotoFile.size,
@@ -103,14 +103,53 @@ app.post('/editImage', function(req, res) {
     .then(imageUrl => {
       return db.updateImageUrl(imageUrl, username);
     })
-    .then(dbEntry => {
-      res.render('personal', {
-        title: dbEntry.title,
-        bio: dbEntry.bio,
-        imageUrl: dbEntry.url
+    .then(row => {
+      res.render('edit/styles', {
+        username: username,
+        font: row.font
       });
     })
     .catch(err => {
       error.handleError(err, res, 'edit/image');
+    });
+});
+
+app.get('/editStyles', function(req, res) {
+  if (!req.user || !req.user.username) {
+    console.log('Not authorised');
+    return res.render('login', {});
+  }
+  db.getFont(req.user.username)
+    .then((font) => {
+      res.render('edit/styles', {
+        username: req.user.username,
+        font
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      renderWithError('edit/styles', req.user.username, 'Could not retrieve font', res);
+    });
+});
+
+app.post('/editStyles', function(req, res) {
+  if (!req.user || !req.user.username) {
+    console.log('Not authorised');
+    return res.render('login', {});
+  }
+  if (!req.body || !req.body.font) {
+    return renderWithError('edit/styles', req.user.username, 'No font provided', res);
+  }
+  db.updateFont(req.user.username, req.body.font)
+    .then((row) => {
+      res.render('personal', {
+        title: row.title,
+        bio: row.bio,
+        imageUrl: row.url,
+        font: row.font
+      });
+    })
+    .catch(err => {
+      error.handleError(err, res, 'edit/styles');
     });
 });

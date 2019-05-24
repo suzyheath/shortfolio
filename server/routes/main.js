@@ -85,7 +85,14 @@ app.get('/u/:username', function(req, res, next) {
         title: row.title,
         bio: row.bio,
         imageUrl: row.url,
-        font: "Courier"
+        font: row.font,
+        social: [{
+          link: 'http://github.com/',
+          platform: 'github'
+        }, {
+          link: 'http://linkedin.com/',
+          platform: 'linkedin'
+        }]
       });
     })
     .catch(err => {

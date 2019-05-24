@@ -9,7 +9,7 @@ const upload = (coverPhoto) => {
       album: keys.album,
       type: 'base64'
     };
-  
+    
     let config = {
       headers: {
         Authorization: `Client-ID ${keys.clientId}`

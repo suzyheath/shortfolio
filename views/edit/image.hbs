@@ -12,17 +12,20 @@
 <body>
   <div class="container container wide">
     <h1 class="title">Edit Page</h1>
-    <p class="bio">Welcome, {{username}}.<br />Customise your portfolio.</p>
+    <p class="bio">
+      Welcome, {{username}}.<br />
+      <span class="fade-in">Change your background.</span>
+    </p>
     <div class="fade-in">
       <form id='editForm'
         action='editImage'
         method='post'
         encType="multipart/form-data">
-          <input type="file" name="coverPhoto" id="coverPhoto" /><label for="coverPhoto">Change Background Image</label>
+          <input type="file" name="coverPhoto" id="coverPhoto" /><label for="coverPhoto">Select Image</label>
           <br /><br /><br />
 
           <div class="half-width left">
-            <a href="/u/{{username}}"><button type="button" class="button left">Skip</button></a>
+            <a href="/editStyles"><button type="button" class="button left">Skip</button></a>
           </div>
           <div class="half-width right">
             <input class="button right" type="submit" value="GO!" />

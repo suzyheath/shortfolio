@@ -43,12 +43,12 @@
 .half-width {
   width: 50%;
 }
-.half-width.left {
-  float: left;
-}
-.half-width.right {
-  float: right;
-}
+  .left {
+    float: left;
+  }
+  .right {
+    float: right;
+  }
 
 
 .top-left {

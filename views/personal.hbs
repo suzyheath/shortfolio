@@ -18,11 +18,21 @@
       }
     </style>
     <link rel="stylesheet" href="/styles/background.css" />
+
+    <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Lobster&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div class="container-personal">
       <h1 class="title">{{title}}</h1>
       <p class="bio">{{{bio}}}</p>
+    </div>
+    <div class="social-footer fade-in">
+      {{#each social}}
+          <a href={{this.link}} target="_blank">
+            <img src="/icons/{{this.platform}}.svg" class="social-icon" />
+          </a>
+      {{/each}}
     </div>
   </body>
 </html>

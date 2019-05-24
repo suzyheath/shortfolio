@@ -119,7 +119,7 @@ const getPortfolio = (username) => {
   });
 };
 
-const updateTitleAndBio = (username, title, bio) => {
+const updateTitleAndBio = (username, newTitle, newBio) => {
   return new Promise((resolve, reject) => {
     getUserByUsername(username)
       .then((row) => {
@@ -127,22 +127,22 @@ const updateTitleAndBio = (username, title, bio) => {
           return reject(em.newErr(404, 'DB Error updateTitleAndBio user does not exist'));
         }
 
-        insertOrReplaceUser(row.username, row.password, row.url, title, bio, row.font)
+        insertOrReplaceUser(row.username, row.password, row.url, newTitle, newBio, row.font)
           .then(() => {
-            row.title = title;
-            row.bio = bio;
+            row.title = newTitle;
+            row.bio = newBio;
             resolve(row);
             console.log(`Updated title and bio for user ${username}`)
           })
           .catch(err => {
-            reject(em.newErr(500, `DB Error in updateImageUrl insertOrReplaceUser catch block: ${err}`));
+            reject(em.newErr(500, `DB Error in updateTitleAndBio insertOrReplaceUser catch block: ${err}`));
           });
       })
       .catch(err => {
         reject(em.newErr(500, `DB Error in updateTitleAndBio getUserByUsername catch block: ${err}`));
       });
   });
-}
+};
 
 const getTitleAndBio = (username) => {
   return new Promise((resolve, reject) => {
@@ -158,6 +158,45 @@ const getTitleAndBio = (username) => {
       })
       .catch(err => {
         reject(em.newErr(500, `DB Error in getTitleAndBio getUserByUsername catch block: ${err}`));
+      });
+  });
+};
+
+const updateFont = (username, newFont) => {
+  return new Promise((resolve, reject) => {
+    getUserByUsername(username)
+      .then((row) => {
+        if (!row) {
+          return reject(em.newErr(404, 'DB Error updateFont user does not exist'));
+        }
+
+        insertOrReplaceUser(row.username, row.password, row.url, row.title, row.bio, newFont)
+          .then(() => {
+            row.font = newFont;
+            resolve(row);
+            console.log(`Updated font for user ${username}`)
+          })
+          .catch(err => {
+            reject(em.newErr(500, `DB Error in updateFont insertOrReplaceUser catch block: ${err}`));
+          });
+      })
+      .catch(err => {
+        reject(em.newErr(500, `DB Error in updateFont getUserByUsername catch block: ${err}`));
+      });
+  });
+}
+
+const getFont = (username) => {
+  return new Promise((resolve, reject) => {
+    getUserByUsername(username)
+      .then((row) => {
+        if (!row) {
+          return reject(em.newErr(404, 'DB Error getFont user does not exist'));
+        }
+        resolve(row.font);
+      })
+      .catch(err => {
+        reject(em.newErr(500, `DB Error in getFont getUserByUsername catch block: ${err}`));
       });
   });
 };
@@ -194,6 +233,8 @@ module.exports = {
   getPortfolio,
   updateTitleAndBio,
   getTitleAndBio,
+  updateFont,
+  getFont,
   selectAll // remove this after dev
 };
 

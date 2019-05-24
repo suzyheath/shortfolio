@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Shortfolio</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="/styles/general.css" />
+  <link rel="stylesheet" href="/styles/buttons.css" />
+  <link rel="stylesheet" href="/styles/animate.css" />
+  <link rel="stylesheet" href="/styles/edit.css" />
+
+  <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Lobster&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="container container wide">
+    <h1 class="title">Edit Page</h1>
+    <p class="bio">
+      Welcome, {{username}}.<br />
+      <span class="fade-in">Choose your font.</span>
+    </p>
+    <div class="fade-in">
+      <form id='editForm'
+        action='editStyles'
+        method='post'
+        encType="multipart/form-data">
+          <select name="font" id="font" class="option" >
+            <option value="{{{font}}}">       {{{font}}} (selected)</option>
+            <option value="Lobster, cursive"> Lobster</option>
+            <option value="Muli">             Muli</option>
+            <option value="Arial">            Arial</option>
+            <option value="Courier">          Courier</option>
+            <option value="Courier New">      Courier New</option>
+            <option value="Times">            Times</option>
+            <option value="Times New Roman">  Times New Roman</option>
+            <option value="Verdana">          Verdana</option>
+          </select>
+          <br /><br /><br />
+
+          <div class="half-width left">
+            <a href="/u/{{username}}"><button type="button" class="button left">Skip</button></a>
+          </div>
+          <div class="half-width right">
+            <input class="button right" type="submit" value="GO!" />
+          </div>
+    </form>
+    </div>
+    <br /><br />
+    <p id="error">{{error}}</p>
+  </div>
+  <form action="logout" class="top-left fade-in late" >
+      <input type="submit" value="Logout" class="button" />
+  </form>
+</body>
+</html>
