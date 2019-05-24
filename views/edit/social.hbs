@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Shortfolio</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="/styles/general.css" />
+  <link rel="stylesheet" href="/styles/buttons.css" />
+  <link rel="stylesheet" href="/styles/animate.css" />
+  <link rel="stylesheet" href="/styles/edit.css" />
+  <link href="https://fonts.googleapis.com/css?family=Lobster&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container container wide">
+    <h1 class="title">Edit Page</h1>
+    <p class="bio">
+      Welcome, {{username}}.<br />
+      <span class="fade-in">Link some social media.</span>
+    </p>
+    <div class="fade-in">
+      <form id='editForm'
+        action='editSocial'
+        method='post'
+        encType="multipart/form-data">
+          <label for="github">github.com/</label>
+          <input type="text" name="github" id="github" placeholder="username" class="input-field" value={{github}} ></input><br />
+          <label for="linkedin">linkedin.com/in/</label>
+          <input type="text" name="linkedin" id="linkedin" placeholder="username" class="input-field" value={{linkedin}} ></input>
+          <br /><br /><br />
+
+          <div class="half-width left">
+            <a href="/end"><button type="button" class="button left">Skip</button></a>
+          </div>
+          <div class="half-width right">
+            <input class="button right" type="submit" value="GO!" />
+          </div>
+      </form>
+    </div>
+    <br /><br />
+    <p id="error">{{error}}</p>
+  </div>
+  <form action="logout" class="top-left" >
+      <input type="submit" value="Logout" class="button" />
+  </form>
+
+  <script src="/js/edit.js"></script>
+</body>
+</html>

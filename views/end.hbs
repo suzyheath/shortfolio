@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Shortfolio</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="/styles/general.css" />
+  <link rel="stylesheet" href="/styles/buttons.css" />
+  <link rel="stylesheet" href="/styles/animate.css" />
+  <link rel="stylesheet" href="/styles/edit.css" />
+  <link href="https://fonts.googleapis.com/css?family=Lobster&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container container wide fade-in">
+    <h1 class="title">Fini</h1>
+    <p class="bio">Nice work,<br />Your page is ready!</p>
+
+    <a href="/u/{{username}}"><button type="button" class="button">Go to page</button></a>
+    <br /><br />
+
+    <p id="error">{{error}}</p>
+  </div>
+  <form action="logout" class="top-left fade-in late" >
+      <input type="submit" value="Logout" class="button" />
+  </form>
+</body>
+</html>

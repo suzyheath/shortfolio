@@ -142,14 +142,83 @@ app.post('/editStyles', function(req, res) {
   }
   db.updateFont(req.user.username, req.body.font)
     .then((row) => {
-      res.render('personal', {
-        title: row.title,
-        bio: row.bio,
-        imageUrl: row.url,
-        font: row.font
-      });
+      renderSocial(req.user.username, row.social, res)
     })
     .catch(err => {
       error.handleError(err, res, 'edit/styles');
     });
+});
+
+function renderSocial(username, socialStr, res) {
+  const social = JSON.parse(socialStr);
+  let github = "", linkedin = "";
+  social.forEach(s => {
+    if (s.platform == 'github') github = s.username;
+    if (s.platform == 'linkedin') linkedin = s.username;
+  });
+  res.render('edit/social', {
+    username,
+    github,
+    linkedin
+  });
+}
+
+app.get('/editSocial', function(req, res) {
+  if (!req.user || !req.user.username) {
+    console.log('Not authorised');
+    return res.render('login', {});
+  }
+  db.getSocial(req.user.username)
+    .then((socialStr) => {
+      renderSocial(req.user.username, socialStr, res);
+    })
+    .catch(err => {
+      console.log(err);
+      renderWithError('edit/social', req.user.username, 'Could not retrieve social links', res);
+    });
+});
+
+app.post('/editSocial', function(req, res) {
+  if (!req.user || !req.user.username) {
+    console.log('Not authorised');
+    return res.render('login', {});
+  }
+  let social = [];
+  if (req.body && req.body.linkedin) {
+    social.push({
+      platform: 'linkedin',
+      link: `http://linkedin.com/in/${req.body.linkedin}`,
+      username: req.body.linkedin
+    });
+  }
+  if (req.body && req.body.github) {
+    social.push({
+      platform: 'github',
+      link: `http://github.com/${req.body.github}`,
+      username: req.body.github
+    });
+  }
+  let socialStr = JSON.stringify(social);
+  db.updateSocial(req.user.username, socialStr)
+    .then((row) => {
+      res.render('end', { username: req.user.username });
+      // res.render('personal', {
+      //   title: row.title,
+      //   bio: row.bio,
+      //   imageUrl: row.url,
+      //   font: row.font,
+      //   social
+      // });
+    })
+    .catch(err => {
+      error.handleError(err, res, 'edit/social');
+    });
+});
+
+app.get('/end', function(req, res) {
+  if (!req.user || !req.user.username) {
+    console.log('Not authorised');
+    return res.render('login', {});
+  }
+  res.render('end', { username: req.user.username });
 });

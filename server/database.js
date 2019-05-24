@@ -20,10 +20,10 @@ const getUserByUsername = (username) => {
   });
 }
 
-const insertOrReplaceUser = (username, password, imageUrl, title, bio, font) => {
+const insertOrReplaceUser = (username, password, imageUrl, title, bio, font, social) => {
   username = username.toLowerCase();
   return new Promise((resolve, reject) => {
-    db.run('insert or replace into users values (?, ?, ?, ?, ?, ?)', [username, password, imageUrl, title, bio, font], (err) => {
+    db.run('insert or replace into users values (?, ?, ?, ?, ?, ?, ?)', [username, password, imageUrl, title, bio, font, social], (err) => {
       if (err) return reject(err);
       resolve();
     });
@@ -43,7 +43,7 @@ const createUser = (username, password) => {
         }
         // no user, so put 'em in
         let hashedPassword = hash(password);
-        insertOrReplaceUser(username, hashedPassword, defaultImageUrl, username, defaultBio, defaultFont)
+        insertOrReplaceUser(username, hashedPassword, defaultImageUrl, username, defaultBio, defaultFont, defaultSocial)
           .then(() => {
             resolve();
             console.log(`Created user ${username}`);
@@ -88,7 +88,7 @@ const updateImageUrl = (newImage, username) => {
           return reject(em.newErr(404, 'DB Error updateImageUrl user does not exist'));
         }
 
-        insertOrReplaceUser(row.username, row.password, newImage, row.title, row.bio, row.font)
+        insertOrReplaceUser(row.username, row.password, newImage, row.title, row.bio, row.font, row.social)
           .then(() => {
             row.url = newImage;
             resolve(row);
@@ -127,7 +127,7 @@ const updateTitleAndBio = (username, newTitle, newBio) => {
           return reject(em.newErr(404, 'DB Error updateTitleAndBio user does not exist'));
         }
 
-        insertOrReplaceUser(row.username, row.password, row.url, newTitle, newBio, row.font)
+        insertOrReplaceUser(row.username, row.password, row.url, newTitle, newBio, row.font, row.social)
           .then(() => {
             row.title = newTitle;
             row.bio = newBio;
@@ -170,7 +170,7 @@ const updateFont = (username, newFont) => {
           return reject(em.newErr(404, 'DB Error updateFont user does not exist'));
         }
 
-        insertOrReplaceUser(row.username, row.password, row.url, row.title, row.bio, newFont)
+        insertOrReplaceUser(row.username, row.password, row.url, row.title, row.bio, newFont, row.social)
           .then(() => {
             row.font = newFont;
             resolve(row);
@@ -184,7 +184,7 @@ const updateFont = (username, newFont) => {
         reject(em.newErr(500, `DB Error in updateFont getUserByUsername catch block: ${err}`));
       });
   });
-}
+};
 
 const getFont = (username) => {
   return new Promise((resolve, reject) => {
@@ -201,11 +201,52 @@ const getFont = (username) => {
   });
 };
 
+const updateSocial = (username, newSocial) => {
+  return new Promise((resolve, reject) => {
+    getUserByUsername(username)
+      .then((row) => {
+        if (!row) {
+          return reject(em.newErr(404, 'DB Error updateSocial user does not exist'));
+        }
+
+        insertOrReplaceUser(row.username, row.password, row.url, row.title, row.bio, row.font, newSocial)
+          .then(() => {
+            row.social = newSocial;
+            resolve(row);
+            console.log(`Updated social for user ${username}`)
+          })
+          .catch(err => {
+            reject(em.newErr(500, `DB Error in updateSocial insertOrReplaceUser catch block: ${err}`));
+          });
+      })
+      .catch(err => {
+        reject(em.newErr(500, `DB Error in updateSocial getUserByUsername catch block: ${err}`));
+      });
+  });
+};
+
+const getSocial = (username) => {
+  return new Promise((resolve, reject) => {
+    getUserByUsername(username)
+      .then((row) => {
+        if (!row) {
+          return reject(em.newErr(404, 'DB Error getSocial user does not exist'));
+        }
+        resolve(row.social);
+      })
+      .catch(err => {
+        reject(em.newErr(500, `DB Error in getSocial getUserByUsername catch block: ${err}`));
+      });
+  });
+};
+
 /* create db */
 
 const defaultImageUrl = 'https://i.imgur.com/vBAg1jJ.jpg';
 const defaultBio = 'This is your bio.\nWrite whatever you want, for example about yourself, career, hobbies or interests.'
 const defaultFont = 'Courier';
+//const defaultSocial = '[{"link": "http://github.com/","platform": "github","username":""}, {"link": "http://linkedin.com/","platform": "linkedin","username":""}]';
+const defaultSocial = '[]';
 
 const create = () => {
   db.run(`create table users (
@@ -214,13 +255,14 @@ const create = () => {
     url      TEXT NOT NULL,
     title    TEXT NOT NULL,
     bio      TEXT,
-    font     TEXT NOT NULL
+    font     TEXT NOT NULL,
+    social   TEXT NOT NULL
   )`, [], logError);
 
-  const insert = 'insert into users values (?, ?, ?, ?, ?, ?)';
-  db.run(insert, ['doggos', hash('doggos'), 'https://i.imgur.com/4FHyn6b.jpg', 'Two Good Doggos', defaultBio, defaultFont], logError);
-  db.run(insert, ['spywhere', hash('spywhere'), 'https://i.imgur.com/jUreedP.jpg', 'SPYWHERE!', defaultBio, defaultFont], logError);
-  db.run(insert, ['fredthefarmer', hash('fredthefarmer'), 'https://i.imgur.com/sbZIj7N.jpg', 'Fred The Farmer', defaultBio, defaultFont], logError);
+  const insert = 'insert into users values (?, ?, ?, ?, ?, ?, ?)';
+  db.run(insert, ['doggos', hash('doggos'), 'https://i.imgur.com/4FHyn6b.jpg', 'Two Good Doggos', defaultBio, defaultFont, defaultSocial], logError);
+  db.run(insert, ['spywhere', hash('spywhere'), 'https://i.imgur.com/jUreedP.jpg', 'SPYWHERE!', defaultBio, defaultFont, defaultSocial], logError);
+  db.run(insert, ['fredthefarmer', hash('fredthefarmer'), 'https://i.imgur.com/sbZIj7N.jpg', 'Fred The Farmer', defaultBio, defaultFont, defaultSocial], logError);
 };
 
 db.serialize(create);
@@ -235,6 +277,8 @@ module.exports = {
   getTitleAndBio,
   updateFont,
   getFont,
+  updateSocial,
+  getSocial,
   selectAll // remove this after dev
 };
 

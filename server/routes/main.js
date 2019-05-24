@@ -86,13 +86,7 @@ app.get('/u/:username', function(req, res, next) {
         bio: row.bio,
         imageUrl: row.url,
         font: row.font,
-        social: [{
-          link: 'http://github.com/',
-          platform: 'github'
-        }, {
-          link: 'http://linkedin.com/',
-          platform: 'linkedin'
-        }]
+        social: JSON.parse(row.social)
       });
     })
     .catch(err => {
@@ -103,7 +97,6 @@ app.get('/u/:username', function(req, res, next) {
 function renderEditText(username, res) {
   db.getTitleAndBio(username)
     .then(row => {
-      let title = `"${row.title}"`;
       res.render('edit/text', { 
         username,
         title: `"${row.title}"`,
