@@ -20,10 +20,10 @@ const getUserByUsername = (username) => {
   });
 }
 
-const insertOrReplaceUser = (username, password, imageUrl, title, bio) => {
+const insertOrReplaceUser = (username, password, imageUrl, title, bio, font) => {
   username = username.toLowerCase();
   return new Promise((resolve, reject) => {
-    db.run('insert or replace into users values (?, ?, ?, ?, ?)', [username, password, imageUrl, title, bio], (err) => {
+    db.run('insert or replace into users values (?, ?, ?, ?, ?, ?)', [username, password, imageUrl, title, bio, font], (err) => {
       if (err) return reject(err);
       resolve();
     });
@@ -43,13 +43,9 @@ const createUser = (username, password) => {
         }
         // no user, so put 'em in
         let hashedPassword = hash(password);
-        insertOrReplaceUser(username, hashedPassword, defaultImageUrl, username, defaultBio)
+        insertOrReplaceUser(username, hashedPassword, defaultImageUrl, username, defaultBio, defaultFont)
           .then(() => {
-            resolve({
-              username,
-              hashedPassword,
-              url: defaultImageUrl
-            });
+            resolve();
             console.log(`Created user ${username}`);
           })
           .catch(err => {
@@ -84,17 +80,17 @@ const loginUser = (username, password) => {
   });
 };
 
-const updateImageUrl = (imageUrl, username) => {
+const updateImageUrl = (newImage, username) => {
   return new Promise((resolve, reject) => {
     getUserByUsername(username)
       .then((row) => {
         if (!row) {
-          return reject(em.newErr(404, 'Page not found'));
+          return reject(em.newErr(404, 'DB Error updateImageUrl user does not exist'));
         }
 
-        insertOrReplaceUser(row.username, row.password, imageUrl, row.title, row.bio)
+        insertOrReplaceUser(row.username, row.password, newImage, row.title, row.bio, row.font)
           .then(() => {
-            row.url = imageUrl;
+            row.url = newImage;
             resolve(row);
             console.log(`Updated image for user ${username}`)
           })
@@ -113,7 +109,7 @@ const getPortfolio = (username) => {
     getUserByUsername(username)
       .then((row) => {
         if (!row) {
-          return reject(em.newErr(404, 'DB Error getPortfolio row does not exist'));
+          return reject(em.newErr(404, 'DB Error getPortfolio user does not exist'));
         }
         resolve(row);
       })
@@ -128,10 +124,10 @@ const updateTitleAndBio = (username, title, bio) => {
     getUserByUsername(username)
       .then((row) => {
         if (!row) {
-          return reject(em.newErr(404, 'User not found'));
+          return reject(em.newErr(404, 'DB Error updateTitleAndBio user does not exist'));
         }
 
-        insertOrReplaceUser(row.username, row.password, row.url, title, bio)
+        insertOrReplaceUser(row.username, row.password, row.url, title, bio, row.font)
           .then(() => {
             row.title = title;
             row.bio = bio;
@@ -148,16 +144,44 @@ const updateTitleAndBio = (username, title, bio) => {
   });
 }
 
+const getTitleAndBio = (username) => {
+  return new Promise((resolve, reject) => {
+    getUserByUsername(username)
+      .then((row) => {
+        if (!row) {
+          return reject(em.newErr(404, 'DB Error getTitleAndBio user does not exist'));
+        }
+        resolve({
+          title: row.title,
+          bio: row.bio
+        });
+      })
+      .catch(err => {
+        reject(em.newErr(500, `DB Error in getTitleAndBio getUserByUsername catch block: ${err}`));
+      });
+  });
+};
+
 /* create db */
 
 const defaultImageUrl = 'https://i.imgur.com/vBAg1jJ.jpg';
-const defaultBio = 'This is your bio. Write whatever you want, for example about yourself, career, hobbies or interests. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
+const defaultBio = 'This is your bio.\nWrite whatever you want, for example about yourself, career, hobbies or interests.'
+const defaultFont = 'Courier';
 
 const create = () => {
-  db.run("create table users (username TEXT PRIMARY KEY, password TEXT NOT NULL, url TEXT NOT NULL, title TEXT NOT NULL, bio TEXT NOT NULL)", [], logError);
-  db.run("insert into users values ('doggos', ?, 'https://i.imgur.com/4FHyn6b.jpg', 'Two Good Doggos', ?)", [hash('doggos'), defaultBio], logError);
-  db.run("insert into users values ('spywhere', ?, 'https://i.imgur.com/jUreedP.jpg', 'SPYWHERE!', ?)", [hash('spywhere'), defaultBio], logError);
-  db.run("insert into users values ('fredthefarmer', ?, 'https://i.imgur.com/sbZIj7N.jpg', 'Fred The Farmer', ?)", [hash('fredthefarmer'), defaultBio], logError);
+  db.run(`create table users (
+    username TEXT PRIMARY KEY,
+    password TEXT NOT NULL,
+    url      TEXT NOT NULL,
+    title    TEXT NOT NULL,
+    bio      TEXT,
+    font     TEXT NOT NULL
+  )`, [], logError);
+
+  const insert = 'insert into users values (?, ?, ?, ?, ?, ?)';
+  db.run(insert, ['doggos', hash('doggos'), 'https://i.imgur.com/4FHyn6b.jpg', 'Two Good Doggos', defaultBio, defaultFont], logError);
+  db.run(insert, ['spywhere', hash('spywhere'), 'https://i.imgur.com/jUreedP.jpg', 'SPYWHERE!', defaultBio, defaultFont], logError);
+  db.run(insert, ['fredthefarmer', hash('fredthefarmer'), 'https://i.imgur.com/sbZIj7N.jpg', 'Fred The Farmer', defaultBio, defaultFont], logError);
 };
 
 db.serialize(create);
@@ -169,6 +193,7 @@ module.exports = {
   updateImageUrl,
   getPortfolio,
   updateTitleAndBio,
+  getTitleAndBio,
   selectAll // remove this after dev
 };
 

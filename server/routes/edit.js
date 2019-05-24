@@ -3,9 +3,24 @@ const error = require('./../error');
 const imgur = require('./../imgur')
 const db = require('./../database');
 
+const renderEditTextWithError = (username, error, res) => {
+  res.render('edit/text', { username, error });
+};
+
 app.get('/edit', function(req, res, next) {
   if (req.user) { // if logged in
-    res.render('edit/text', { username: req.user.username });
+    db.getTitleAndBio(req.user.username)
+    .then(row => {
+      res.render('edit/text', { 
+        username: req.user.username,
+        title: `"${row.title}"`,
+        bio: row.bio
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      renderEditTextWithError(req.user.username, 'Could not retrieve Title or Bio', res);
+    });
   } else {
     console.log('Not authorised');
     res.render('login', {});
@@ -18,18 +33,12 @@ app.post('/editText', function(req, res) {
     return res.render('login', {});
   }
   if (!req.body || !req.body.title) {
-    return res.render('edit/text', {
-      username: req.user.username,
-      error: 'No title provided'
-    });
+    return renderEditTextWithError(req.user.username, 'No title provided', res);
   }
-  if (!req.body.bio) {
-    return res.render('edit/text', {
-      username: req.user.username,
-      error: 'No bio provided'
-    });
-  }
-  db.updateTitleAndBio(req.user.username, req.body.title, req.body.bio)
+  const bio = (!req.body.bio)
+                ? ""  // allow no bio
+                : req.body.bio.replace(/(?:\r\n|\r|\n)/g, '<br>'); // replace \n with <br \>
+  db.updateTitleAndBio(req.user.username, req.body.title, bio)
     .then((row) => {
       res.render('edit/image', {
         username: req.user.username
@@ -38,6 +47,16 @@ app.post('/editText', function(req, res) {
     .catch(err => {
       error.handleError(err, res, 'edit/text');
     });
+});
+
+app.get('/editImage', function(req, res) {
+  if (!req.user || !req.user.username) {
+    console.log('Not authorised');
+    return res.render('login', {});
+  }
+  res.render('edit/image', {
+    username: req.user.username
+  });
 });
 
 app.post('/editImage', function(req, res) {

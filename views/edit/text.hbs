@@ -17,10 +17,16 @@
         action='editText'
         method='post'
         encType="multipart/form-data">
-          <input type="text" name="title" id="title-input" placeholder="Title" class="input-field" /><br />
-          <textarea id="bio" name="bio" rows="5" cols="70" placeholder="Bio..." class="textarea"></textarea>
+          <input type="text" name="title" id="title-input" placeholder="Title" class="input-field" value={{{title}}} /><br />
+          <textarea id="bio" name="bio" rows="5" cols="70" placeholder="Bio..." class="textarea">{{bio}}</textarea>
           <br /><br /><br />
-          <input type='submit' value='GO!' class="button" />
+
+          <div class="half-width left">
+            <a href="/editImage"><button type="button" class="button left">Skip</button></a>
+          </div>
+          <div class="half-width right">
+            <input class="button right" type="submit" value="GO!" />
+          </div>
     </form>
     <p id="error">{{error}}</p>
   </div>

@@ -11,7 +11,7 @@ app.get('/', function(req, res, next) {
 
 app.get('/register', function(req, res, next) {
   if (req.user) { // if logged in
-    res.render('edit/text', { username: req.user.username });
+    renderEditText(req.user.username, res);
   } else {
     res.render('register', {});
   }
@@ -30,7 +30,7 @@ app.post('/register', function(req, res, next) {
       const token = jwt.sign({ username }, keys.jwtSecret);
       res.status(200)
         .cookie('auth', { token }, { maxAge: 30 * 60 * 1000 })
-        .render('edit/text', { username });
+      renderEditText(username, res);
     })
     .catch(err => {
       error.handleError(err, res, 'register');
@@ -39,7 +39,7 @@ app.post('/register', function(req, res, next) {
 
 app.get('/login', function(req, res, next) {
   if (req.user) { // if logged in
-    res.render('edit/text', { username: req.user.username });
+    renderEditText(req.user.username, res);
   } else {
     res.render('login', {});
   }
@@ -57,7 +57,7 @@ app.post('/login', function(req, res, next) {
       const token = jwt.sign({ username }, keys.jwtSecret);
       res.status(200)
         .cookie('auth', { token }, { maxAge: 30 * 60 * 1000 })
-        .render('edit/text', { username });
+      renderEditText(username, res);
     })
     .catch(err => {
       error.handleError(err, res, 'login');
@@ -84,10 +84,27 @@ app.get('/u/:username', function(req, res, next) {
       res.render('personal', {
         title: row.title,
         bio: row.bio,
-        imageUrl: row.url
+        imageUrl: row.url,
+        font: "Courier"
       });
     })
     .catch(err => {
       error.handleError(err, res, 'home');
     });
 });
+
+function renderEditText(username, res) {
+  db.getTitleAndBio(username)
+    .then(row => {
+      let title = `"${row.title}"`;
+      res.render('edit/text', { 
+        username,
+        title: `"${row.title}"`,
+        bio: row.bio
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.render('edit/text', { username, error: 'Could not retrieve Title or Bio' });
+    });
+};

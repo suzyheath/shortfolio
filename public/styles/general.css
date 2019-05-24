@@ -22,12 +22,12 @@ body {
 }
 
 .title {
-  font-size: 40px;
+  font-size: 60px;
+  margin: 0px;
 }
 
 .bio {
-  font-size: 15px;
-  margin-bottom: 20px;
+  font-size: 20px;
 }
 
 .container {
@@ -38,7 +38,6 @@ body {
 
   .container .title {
     font-size: 70px;
-    margin: 0px;
   }
 
   .container .bio {
@@ -53,7 +52,7 @@ body {
 
 .container-personal {
   text-align: left;
-  padding: 10% 20%;
+  padding: 10% 25%;
 }
 
 /* text input fields */
