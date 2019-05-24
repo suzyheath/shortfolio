@@ -11,10 +11,13 @@ app.get('/edit', function(req, res, next) {
   if (req.user) { // if logged in
     db.getTitleAndBio(req.user.username)
     .then(row => {
+      const bio = (!row.bio)
+                ? ""  // allow no bio
+                : row.bio.replace(/(?:<br>)/g, '\n');
       res.render('edit/text', { 
         username: req.user.username,
         title: `"${row.title}"`,
-        bio: row.bio
+        bio
       });
     })
     .catch(err => {

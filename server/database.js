@@ -3,13 +3,6 @@ const bcrypt = require('bcryptjs');
 
 const em = require('./error');
 
-let db = new sqlite3.Database(':memory:', (err) => {
-  if (err) {
-    return console.error(err.message);
-  }
-  console.log('Connected to the in-memory SQlite database.');
-});
-
 const getUserByUsername = (username) => {
   username = username.toLowerCase();
   return new Promise((resolve, reject) => {
@@ -242,13 +235,19 @@ const getSocial = (username) => {
 
 /* create db */
 
-const defaultImageUrl = 'https://i.imgur.com/vBAg1jJ.jpg';
+let db = new sqlite3.Database('./data.db', (err) => {
+  if (err) {
+    return console.error(err.message);
+  }
+  console.log('Connected to the in-memory SQlite database.');
+});
+
+const defaultImageUrl = 'https://i.imgur.com/7ehiObZ.jpg';
 const defaultBio = 'This is your bio.\nWrite whatever you want, for example about yourself, career, hobbies or interests.'
-const defaultFont = 'Courier';
-//const defaultSocial = '[{"link": "http://github.com/","platform": "github","username":""}, {"link": "http://linkedin.com/","platform": "linkedin","username":""}]';
+const defaultFont = 'Verdana';
 const defaultSocial = '[]';
 
-const create = () => {
+const createNewDb = () => {
   db.run(`create table users (
     username TEXT PRIMARY KEY,
     password TEXT NOT NULL,
@@ -265,7 +264,7 @@ const create = () => {
   db.run(insert, ['fredthefarmer', hash('fredthefarmer'), 'https://i.imgur.com/sbZIj7N.jpg', 'Fred The Farmer', defaultBio, defaultFont, defaultSocial], logError);
 };
 
-db.serialize(create);
+// db.serialize(createNewDb);
 
 module.exports = {
   close: db.close,
