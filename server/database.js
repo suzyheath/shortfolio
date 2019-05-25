@@ -240,7 +240,16 @@ const getAllUsers = () => {
       resolve(rows);
     });
   });
-}
+};
+
+const deleteUser = (username) => {
+  return new Promise((resolve, reject) => {
+    db.run('delete from users where username=?', [username], function(err) {
+      if (err) return reject(err);
+      resolve();
+    });
+  });
+};
 
 /* create db */
 
@@ -287,7 +296,8 @@ module.exports = {
   getFont,
   updateSocial,
   getSocial,
-  getAllUsers
+  getAllUsers,
+  deleteUser
 };
 
 /* helpers */

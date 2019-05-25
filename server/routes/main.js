@@ -90,7 +90,17 @@ app.get('/u/:username', function(req, res, next) {
 });
 
 function renderEditText(username, res) {
-  db.getTitleAndBio(username)
+  if (username == 'admin') {
+    db.getAllUsers()
+    .then(users => {
+      res.render('admin', { users });
+    })
+    .catch(err => {
+      console.log(err);
+      res.render('admin', { error: 'Could not retrieve users' });
+    });
+  } else {
+    db.getTitleAndBio(username)
     .then(row => {
       const bio = (!row.bio)
                 ? ""  // allow no bio
@@ -105,4 +115,5 @@ function renderEditText(username, res) {
       console.log(err);
       res.render('edit/text', { username, error: 'Could not retrieve Title or Bio' });
     });
+  }
 };

@@ -9,21 +9,34 @@ const renderWithError = (page, username, error, res) => {
 
 app.get('/edit', function(req, res, next) {
   if (req.user) { // if logged in
-    db.getTitleAndBio(req.user.username)
-    .then(row => {
-      const bio = (!row.bio)
-                ? ""  // allow no bio
-                : row.bio.replace(/(?:<br>)/g, '\n');
-      res.render('edit/text', { 
-        username: req.user.username,
-        title: `"${row.title}"`,
-        bio
+    let username = req.user.username;
+    if (username == 'admin') {
+      db.getAllUsers()
+      .then(users => {
+        res.render('admin', { users });
+      })
+      .catch(err => {
+        console.log(err);
+        res.render('admin', { error: 'Could not retrieve users' });
       });
-    })
-    .catch(err => {
-      console.log(err);
-      renderWithError('edit/text', req.user.username, 'Could not retrieve title or bio', res);
-    });
+    } else {
+      db.getTitleAndBio(username)
+      .then(row => {
+        const bio = (!row.bio)
+                  ? ""  // allow no bio
+                  : row.bio.replace(/(?:<br>)/g, '\n');
+        res.render('edit/text', { 
+          username: username,
+          title: `"${row.title}"`,
+          bio
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        renderWithError('edit/text', username, 'Could not retrieve title or bio', res);
+      });
+    }
+    
   } else {
     console.log('Not authorised');
     res.render('login', {});

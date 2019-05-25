@@ -14,6 +14,7 @@
   <div class="container container wide fade-in">
     <h1 class="title">Admin Page</h1>
     <p class="bio">Manage users</p>
+    <p id="error">{{error}}</p>
     <table class="users-table">
       <thead>
         <tr> 
@@ -25,7 +26,7 @@
       </thead>
       <tbody>
         {{#each users}}
-          <tr>
+          <tr id="{{this.username}}">
             <td class="username-col">
               <p>{{this.username}}</p>
             </td>
@@ -42,8 +43,18 @@
         {{/each}}
       </tbody>
     </table>
-    <p id="error">{{error}}</p>
   </div>
+  <div id="greyout" class="hide"></div>
+  <div id="popup" class="hide">
+    <p class="bio">Delete user</p>
+    <p id="confirm-delete">You are about to delete user X</p>
+    <form action="deleteUser" method="POST" >
+      <input type="text" value="" hidden="hidden" id="delete-user-input" name="username" />
+      <input type="submit" value="Confirm" class="button" />
+    </form>
+    <p>(click elsewhere to cancel)</p>
+  </div>
+
   <form action="logout" class="top-left fade-in late" >
       <input type="submit" value="Logout" class="button" />
   </form>
