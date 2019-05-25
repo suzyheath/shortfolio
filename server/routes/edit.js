@@ -24,7 +24,7 @@ app.get('/edit', function(req, res, next) {
       .then(row => {
         const bio = (!row.bio)
                   ? ""  // allow no bio
-                  : row.bio.replace(/(?:<br>)/g, '\n');
+                  : row.bio.replace(/<br\s*[\/]?>/gi, '\n');
         res.render('edit/text', { 
           username: username,
           title: `"${row.title}"`,
@@ -53,7 +53,7 @@ app.post('/editText', function(req, res) {
   }
   const bio = (!req.body.bio)
                 ? ""  // allow no bio
-                : req.body.bio.replace(/(?:\r\n|\r|\n)/g, '<br>'); // replace \n with <br \>
+                : req.body.bio.replace(/(?:\r\n|\r|\n)/g, '<br/>'); // replace \n with <br \>
   db.updateTitleAndBio(req.user.username, req.body.title, bio)
     .then((row) => {
       res.render('edit/image', {

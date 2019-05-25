@@ -104,7 +104,7 @@ function renderEditText(username, res) {
     .then(row => {
       const bio = (!row.bio)
                 ? ""  // allow no bio
-                : row.bio.replace(/(?:<br>)/g, '\n');
+                : row.bio.replace(/<br\s*[\/]?>/gi, '\n');
       res.render('edit/text', { 
         username,
         title: `"${row.title}"`,

@@ -36,17 +36,14 @@ const createUser = (username, password) => {
         }
         // no user, so put 'em in
         let hashedPassword = hash(password);
-        insertOrReplaceUser(username, hashedPassword, defaultImageUrl, username, defaultBio, defaultFont, defaultSocial)
-          .then(() => {
-            resolve();
-            console.log(`Created user ${username}`);
-          })
-          .catch(err => {
-            reject(em.newErr(500, `DB Error in createUser insertOrReplaceUser catch block: ${err}`));
-          });
+        return insertOrReplaceUser(username, hashedPassword, defaultImageUrl, username, defaultBio, defaultFont, defaultSocial)
+      })
+      .then(() => {
+        resolve();
+        console.log(`Created user ${username}`);
       })
       .catch(err => {
-        reject(em.newErr(500, `DB Error in createUser getUserByUsername catch block: ${err}`));
+        reject(em.newErr(500, `DB Error in createUser catch block: ${err}`));
       });
   });
 };

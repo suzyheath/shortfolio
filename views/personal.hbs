@@ -2,11 +2,11 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" content="A short portfolio" />
     <title>{{title}}</title>
     <link rel="stylesheet" href="/styles/general.css" />
     <link rel="stylesheet" href="/styles/animate.css" />
-    <style>
+    <style type="text/css">
       body {
         background:
           linear-gradient(
@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="/styles/background.css" />
 
     <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css?family=Lobster&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Lobster&amp;display=swap" rel="stylesheet" />
   </head>
   <body>
     <div class="container-personal fade-in">
@@ -31,8 +31,8 @@
     </div>
     <div class="social-footer fade-in late">
       {{#each social}}
-          <a href={{this.link}} target="_blank">
-            <img src="/icons/{{this.platform}}.svg" class="social-icon" />
+          <a href="{{this.link}}" target="_blank">
+            <img src="/icons/{{this.platform}}.svg" class="social-icon" alt="social media icon" />
           </a>
       {{/each}}
     </div>
