@@ -30,9 +30,9 @@ The end product can be seen at localhost:8080/u/demo.
 
 ## SVG
 
-TODO
+A
 
-Custom drawn SVG icons for social media links. For example /u/demo
+Using Inkscape I was able to create custom icons for the Github and Linkedin links users can optionally add to their website. I was able to import png versions of the original logos, and use `Path > Trace Bitmap` to convert them into paths. Using the boolean Path functions I was able to create round icons by removing shapes from a circle.
 
 ## Server
 
