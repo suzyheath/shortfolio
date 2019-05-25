@@ -22,10 +22,20 @@ const hidePopup = () => {
 }
 
 document.querySelectorAll('.users-table td')
-  .forEach(el => el.addEventListener("click", function(e) {
+  .forEach(el => el.addEventListener('click', function(e) {
     const col = mapClassNameToDbName(this.className);
     const row = this.parentElement.id;
     showPopup(row);
+  }));
+
+document.querySelectorAll('.users-table tr')
+  .forEach(el => el.addEventListener("mouseenter", function(e) {
+    this.classList.add('hovered');
+  }));
+
+document.querySelectorAll('.users-table tr')
+  .forEach(el => el.addEventListener("mouseleave", function(e) {
+    this.classList.remove('hovered');
   }));
 
 document.getElementById('greyout')

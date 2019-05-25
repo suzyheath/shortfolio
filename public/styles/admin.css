@@ -22,12 +22,24 @@
     .users-table thead th {
       padding: 5px 0px;
     }
+
   .users-table tbody tr:nth-child(even) {
     background: 
       linear-gradient(
         rgba(0,0,0, 0.1),
         rgba(0,0,0, 0.1)
       );
+  }
+  .users-table tbody tr.hovered {
+    background: 
+        linear-gradient(
+          rgba(255,255,255, 0.2),
+          rgba(255,255,255, 0.2)
+        );
+  }
+  .users-table td:nth-child(1),
+  .users-table th:nth-child(1) {
+    padding-left: 10px
   }
 
   .users-table .username-col {
@@ -64,8 +76,8 @@
   
   background: 
       linear-gradient(
-        rgba(255,255,255, 0.4),
-        rgba(255,255,255, 0.4)
+        rgba(255,255,255, 0.8),
+        rgba(255,255,255, 0.8)
       );
   border-radius: 10px;
   padding: 10px 15px;

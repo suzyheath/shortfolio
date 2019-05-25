@@ -32,7 +32,7 @@ app.post('/deleteUser', function(req, res, next) {
   let userToDelete = req.body.username;
   db.deleteUser(userToDelete)
     .then(() => {
-      renderAdminPage(res, `Succesfulll deleted user ${userToDelete}`);
+      renderAdminPage(res, `Succesfully deleted user ${userToDelete}`);
     })
     .catch(err => {
       console.log(err);
