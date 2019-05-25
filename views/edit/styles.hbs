@@ -2,15 +2,8 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
-  <title>Shortfolio</title>
-  <meta charset="utf-8" />
-  <link rel="stylesheet" href="/styles/general.css" />
-  <link rel="stylesheet" href="/styles/buttons.css" />
-  <link rel="stylesheet" href="/styles/animate.css" />
+  {{> head title="Shortfolio"}}
   <link rel="stylesheet" href="/styles/edit.css" />
-
-  <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css?family=Lobster&display=swap" rel="stylesheet" />
 </head>
 <body>
   <div class="container container wide">
@@ -37,12 +30,7 @@
           </select>
           <br /><br /><br />
 
-          <div class="half-width left">
-            <a href="/editSocial"><button type="button" class="button left">Skip</button></a>
-          </div>
-          <div class="half-width right">
-            <input class="button right" type="submit" value="GO!" />
-          </div>
+          {{> twobuttons skip-link="/editSocial"}}
     </form>
     </div>
     <br /><br />

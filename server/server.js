@@ -28,7 +28,7 @@ app.use(function(req, res, next) {
   }
 });
 
-hbs.registerPartials(__dirname + '/views/partials');
+hbs.registerPartials(__dirname + '/../views/partials');
 hbs.registerHelper('ifExists', str => (str == null) ? "" : str);
 
 let port = process.env.port || 8080;
