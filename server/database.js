@@ -233,6 +233,15 @@ const getSocial = (username) => {
   });
 };
 
+const getAllUsers = () => {
+  return new Promise((resolve, reject) => {
+    db.all('select * from users', (err, rows) => {
+      if (err) return reject(err);
+      resolve(rows);
+    });
+  });
+}
+
 /* create db */
 
 let db = new sqlite3.Database('./data.db', (err) => {
@@ -277,7 +286,8 @@ module.exports = {
   updateFont,
   getFont,
   updateSocial,
-  getSocial
+  getSocial,
+  getAllUsers
 };
 
 /* helpers */

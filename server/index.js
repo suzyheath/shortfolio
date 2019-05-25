@@ -7,6 +7,7 @@ const server = require('./server');
 // set up routes
 require('./routes/main.js');
 require('./routes/edit.js');
+require('./routes/admin.js');
 
 server.app.get('/:any', function(req, res, next) {
   res.status(404)

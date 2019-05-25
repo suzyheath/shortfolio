@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <title>Shortfolio</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="/styles/general.css" />
+  <link rel="stylesheet" href="/styles/buttons.css" />
+  <link rel="stylesheet" href="/styles/animate.css" />
+  <link rel="stylesheet" href="/styles/admin.css" />
+  <link href="https://fonts.googleapis.com/css?family=Lobster&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container container wide fade-in">
+    <h1 class="title">Admin Page</h1>
+    <p class="bio">Manage users</p>
+    <table class="users-table">
+      <thead>
+        <tr> 
+          <th class="username-col"> Username </th>
+          <th class="title-col"   > Title </th>
+          <th class="bio-col"     > Bio </th>
+          <th class="image-col"   > Image </th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each users}}
+          <tr>
+            <td class="username-col">
+              <p>{{this.username}}</p>
+            </td>
+            <td class="title-col">
+              <p>{{this.title}}</p>
+            </td>
+            <td class="bio-col">
+              <p>{{{this.bio}}}</p>
+            </td>
+            <td class="image-col">
+              <img src="{{this.url}}" />
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <p id="error">{{error}}</p>
+  </div>
+  <form action="logout" class="top-left fade-in late" >
+      <input type="submit" value="Logout" class="button" />
+  </form>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+.users-table {
+  width: 100%;
+  table-layout: fixed;
+  text-align: left;
+  background: 
+      linear-gradient(
+        rgba(255,255,255, 0.1),
+        rgba(255,255,255, 0.1)
+      );
+  border-collapse: collapse;
+} 
+
+  .users-table thead {
+    font-size: 20px;
+    background: 
+      linear-gradient(
+        rgba(0,0,0, 0.1),
+        rgba(0,0,0, 0.1)
+      );
+    border-bottom: 1px black solid;
+  }
+    .users-table thead th {
+      padding: 5px 0px;
+    }
+  .users-table tbody tr:nth-child(even) {
+    background: 
+      linear-gradient(
+        rgba(0,0,0, 0.1),
+        rgba(0,0,0, 0.1)
+      );
+  }
+
+  .users-table .username-col {
+    width: 15%;
+  }
+  .users-table .title-col {
+    width: 15%;
+  }
+  .users-table .bio-col {
+    width: 40%;
+  }
+  .users-table .image-col {
+    width: 30%;
+  }
+    .users-table .image-col img {
+      padding: 10px;
+      width: calc(100% - 20px);
+    }
