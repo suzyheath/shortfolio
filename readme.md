@@ -28,3 +28,7 @@ Install [certbot](https://certbot.eff.org/) on the VM.
 ```
 sudo certbot certonly --webroot -w /home/lh16421/shortfolio/public/ -d shortfolio.site -d www.shortfolio.site
 ```
+
+To pull this off the website needs to be accessible via standard HTTP, rather than HTTPS.
+
+Once generated, put the paths to the key and cert files into environment variables HTTPS_KEY and HTTPS_CERT respectively.
