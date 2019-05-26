@@ -15,12 +15,14 @@ server.app.get('/:any', function(req, res, next) {
 });
 
 const httpsOptions = {
-  key: process.env.HTTPS_KEY || fs.readFileSync(__dirname + '/cert/localhost.key'),
-  cert: process.env.HTTPS_CERT || fs.readFileSync(__dirname + '/cert/localhost.crt')
-}
+  key:  fs.readFileSync(process.env.HTTPS_KEY  || (__dirname + '/cert/localhost.key')),
+  cert: fs.readFileSync(process.env.HTTPS_CERT || (__dirname + '/cert/localhost.crt'))
+};
 
+// HTTP
 // server.app.listen(server.port, () => { console.log(`Server is up on port ${server.port}`); });
 
+// HTTPS
 https.createServer(httpsOptions, server.app)
   .listen(server.port, function () {
     console.log(`Server is up on port ${server.port}`);

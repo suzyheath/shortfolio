@@ -32,3 +32,5 @@ sudo certbot certonly --webroot -w /home/lh16421/shortfolio/public/ -d shortfoli
 To pull this off the website needs to be accessible via standard HTTP, rather than HTTPS.
 
 Once generated, put the paths to the key and cert files into environment variables HTTPS_KEY and HTTPS_CERT respectively.
+
+In order for node to read these files it needs higher level permissions, so `sudo` it up.
