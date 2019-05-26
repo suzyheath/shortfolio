@@ -1,5 +1,5 @@
 const https = require('https');
-const express = require('express');
+const http = require('http');
 const fs = require('fs');
 
 const port_HTTPS = 8080;
@@ -20,11 +20,11 @@ server.app.get('/:any', function(req, res, next) {
 });
 
 // forward http requests to https
-const http = express.createServer();
-http.get('*', function(req, res) {  
-  res.redirect('https://shortfolio.site' + req.url);
-});
-http.listen(port_HTTP);
+http.createServer(function(req, res) {
+      res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
+      res.end();
+    })
+    .listen(port_HTTP);
 
 // start server on HTTPS
 const httpsOptions = {
@@ -34,5 +34,5 @@ const httpsOptions = {
 
 https.createServer(httpsOptions, server.app)
   .listen(port_HTTPS, function () {
-    console.log(`Server is up on port ${port}`);
+    console.log(`Server is up on port ${port_HTTPS}`);
   });
