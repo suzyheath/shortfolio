@@ -9,7 +9,7 @@ Server is running on a Microsoft Azure VM.
 It runs on port 8080 so ports 80 and 443 need to be redirected;
 
 ```
-sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
+sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 3000
 sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 443 -j REDIRECT --to-port 8080
 ```
 
