@@ -6,12 +6,15 @@ Shortfolio allows anyone to create their own clean and professional personal web
 
 Server is running on a Microsoft Azure VM.
 
-It runs on port 8080 so ports 80 and 443 need to be redirected;
+It runs on port 3000. We forward https requests from port 443 to 3000. For some reason http requests from port 80 sort themselves out without help.
 
 ```
-sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 3000
-sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 443 -j REDIRECT --to-port 8080
+sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 443 -j REDIRECT --to-port 3000
 ```
+
+To view these rules use `iptables -L -t nat`.
+
+To delete the first rule from the PREROUTING chain use `sudo iptables -t nat -D PREROUTING 1`.
 
 The npm package [forever](https://github.com/foreverjs/forever) is used to run the server in background through the ssh terminal.
 
