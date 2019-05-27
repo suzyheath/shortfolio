@@ -1,8 +1,9 @@
 const https = require('https');
-// const http = require('http');
+const express = require('express');
 const fs = require('fs');
 
 const port_HTTPS = 3000;
+const port_HTTP = 8080;
 
 // configure server and middleware
 const server = require('./server');
@@ -12,10 +13,19 @@ require('./routes/main.js');
 require('./routes/edit.js');
 require('./routes/admin.js');
 
-// any accidental urls should redirect to pretty 404
+// any accidental urls should redirect to a pretty 404
 server.app.get('/:any', function(req, res, next) {
   res.status(404)
     .render('404');
+});
+
+// make a new express instance to redirect http to https
+const http = express();
+http.get('*', function(req, res) {  
+    res.redirect('https://' + req.headers.host + req.url);
+});
+http.listen(port_HTTP, function() {
+  console.log(`HTTP server listening on port ${port_HTTP}...`)
 });
 
 // start server on HTTPS

@@ -6,13 +6,14 @@ Shortfolio allows anyone to create their own clean and professional personal web
 
 Server is running on a Microsoft Azure VM.
 
-It runs on port 3000. We forward https requests from port 443 to 3000. For some reason http requests from port 80 sort themselves out without help.
+It runs on port 3000. We forward https requests from port 443 to 3000, and http requests from port 80 to 8080, where a separate instance of express redirects their url to use https.
 
 ```
 sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 443 -j REDIRECT --to-port 3000
+sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80  -j REDIRECT --to-port 8080
 ```
 
-To view these rules use `iptables -L -t nat`.
+To view these rules use `iptables -L -t nat --line-numbers`.
 
 To delete the first rule from the PREROUTING chain use `sudo iptables -t nat -D PREROUTING 1`.
 
@@ -37,3 +38,9 @@ To pull this off the website needs to be accessible via standard HTTP, rather th
 Once generated, put the paths to the key and cert files into environment variables HTTPS_KEY and HTTPS_CERT respectively.
 
 In order for node to read these files it needs higher level permissions, so `sudo` it up.
+
+## Todo
+
+- make mobile friendly
+- allow users to change their password
+- add link at bottom of personal sites to shortfolio.site
